@@ -95,7 +95,7 @@
   .card .role{color:var(--faint);font-size:13.5px;margin:3px 0 12px}
   .card .desc{color:var(--muted);font-size:14px;flex:1}
   .metric{margin:14px 0 6px;font-size:13px;color:var(--a3);font-weight:600;font-family:"Space Grotesk"}
-  .metric.help{cursor:help;border-bottom:1px dotted var(--faint);display:inline-block}
+  .metric.help{cursor:help;display:inline-block}
   .plain{margin:0 0 12px;font-size:12px;color:var(--muted);line-height:1.45}
   .plain b{color:var(--text);font-weight:600}
   .tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
@@ -234,7 +234,7 @@
           <div class="role">Emergent political belief &amp; generative NPC dialogue</div>
           <div class="desc">A stochastic agent-based model that evolves the political opinions of 1,010 named <em>Skyrim</em> NPCs through the Civil War: bounded-confidence influence, out-group repulsion, zealot anchoring, and a hold-clustered social network. To prove the social machinery (not the events) drives the outcome, it is tested against an <em>energy-matched</em> null with identical shocks: the structured model produces sharp echo chambers the null cannot. The emergent opinion of each character then conditions a local language model that voices them.</div>
           <div class="metric help" title="Separation: how far the two campaigns' average opinions end up apart (0.41 with the social model vs 0.24 without). Neutral-zone: share of NPCs left undecided (under 1% vs 21%). KS D: how different the two outcome distributions are, on a 0-to-1 scale, where 0.37 counts as large.">Beats an energy-matched null: separation 0.41 vs 0.24 · neutral-zone &lt;1% vs 21% · KS D = 0.37 · 1,010 NPCs</div>
-          <div class="plain">In plain English: I re-ran the model with the social rules replaced by random motion of the <b>same size</b>. The realism disappeared: NPCs no longer took clear sides and the two campaigns barely diverged. So the believable structure is produced by the model, not by chance or the battles.</div>
+          <div class="plain">Note: I re-ran the model with the social rules replaced by random motion of the <b>same size</b>. The realism disappeared: NPCs no longer took clear sides and the two campaigns barely diverged. So the believable structure is produced by the model, not by chance or the battles.</div>
           <div class="tags">
             <span class="tag">R</span><span class="tag">Agent-Based Modeling</span><span class="tag">Opinion Dynamics</span><span class="tag">SLM · Ollama</span><span class="tag">Monte Carlo</span>
           </div>
@@ -256,7 +256,7 @@
           <div class="role">MILP + ML + MDP team-economy optimizer</div>
           <div class="desc">A data-driven economy optimizer for <em>Valorant</em>: a Mixed-Integer Linear Program (SciPy HiGHS) assigns team-wide loadouts, an XGBoost model trained on 2.9M round samples predicts round-win probability, and a Markov Decision Process solved by backward induction factors long-term economy value. An LLM layer adds context-aware tactical constraints. In a paired simulation the EV-aware solver beats a naive save/buy rule by a clear, statistically significant margin. Deployed as a live interactive app.</div>
           <div class="metric">XGBoost round-win model (AUC 0.71) · EV-aware solver +0.87 rounds/match vs naive (+7.2%, 95% CI 0.79 to 0.95, p &lt; 1e-89) · live app</div>
-          <div class="plain">In plain English: a model learns each round's win odds, and the optimizer buys to maximize them while protecting the future bank. Across 1,000 simulated matches it wins almost one extra round per match versus a simple "save or full-buy" rule. The comparison is paired (same matches for both), so the edge is reliable, not luck.</div>
+          <div class="plain">Note: a model learns each round's win odds, and the optimizer buys to maximize them while protecting the future bank. Across 1,000 simulated matches it wins almost one extra round per match versus a simple "save or full-buy" rule. The comparison is paired (same matches for both), so the edge is reliable, not luck.</div>
           <div class="tags">
             <span class="tag">Python</span><span class="tag">MILP · HiGHS</span><span class="tag">XGBoost</span><span class="tag">MDP</span><span class="tag">Streamlit</span><span class="tag">LLM</span>
           </div>
@@ -278,7 +278,7 @@
           <div class="role">A mechanistic model of <em>why</em> players pick the classes they do</div>
           <div class="desc">A first-principles model of <em>Skyrim</em> class choice built to <em>explain</em> behavior, not just forecast it. It weighs three forces on the probability simplex, combat efficiency, expressive build-complexity, and diversity-seeking, solved with LP/MILP (SciPy HiGHS, Gurobi). The finding: no single force works. Pure efficiency-maximizing collapses to 100% Stealth, which players never do; all three together cut error 48% below uniform. Because it is mechanistic, it can run counterfactuals a statistical prior cannot, such as "rebalance a class and predict how the population shifts."</div>
           <div class="metric help" title="On raw held-out MAE the model (0.086) is beaten by trivial priors (down to 0.0001). But that is largely an artifact of a stratified split that preserves class shares by construction, and those priors cannot run counterfactuals. The model's value is mechanistic explanation, not short-horizon prediction.">48% lower error than uniform · isolates the 3 forces behind class choice · a mechanistic / counterfactual tool</div>
-          <div class="plain">In plain English: this explains <b>why</b> players choose as they do. Pure power-gaming would make everyone a Stealth assassin, but players don't, they also value variety and complex, expressive builds. Modeling all three forces together explains the real mix far better than any one alone, and unlike a model that just memorizes today's numbers, it can answer "what if we rebalanced a class?"</div>
+          <div class="plain">Note: this explains <b>why</b> players choose as they do. Pure power-gaming would make everyone a Stealth assassin, but players don't, they also value variety and complex, expressive builds. Modeling all three forces together explains the real mix far better than any one alone, and unlike a model that just memorizes today's numbers, it can answer "what if we rebalanced a class?"</div>
           <div class="tags">
             <span class="tag">Python</span><span class="tag">LP / MILP</span><span class="tag">Gurobi</span><span class="tag">Entropy Objective</span><span class="tag">Reproducible</span>
           </div>
@@ -300,13 +300,12 @@
           <div class="role">Exploratory churn analysis across live-service titles</div>
           <div class="desc">A data pipeline over Steam's top titles: review text anchored to playtime telemetry to estimate a playtime-weighted "churn point" (when veterans drop off), with a local DeepSeek-R1 model surfacing the recurring themes behind it. Directional finding: design and progression issues, not monetization, dominate the qualitative complaints of long-time players. The themes are LLM-labeled and the metric is a proxy, so this is framed as exploratory market intelligence rather than a validated causal claim.</div>
           <div class="metric">47 titles · playtime-weighted churn proxy · LLM-surfaced themes (exploratory)</div>
-          <div class="plain">In plain English: across 47 live-service games I estimated how many hours in players tend to drop off (weighting reviews by playtime), then had a local AI read the reviews and group the reasons. It points to design and progression problems over monetization, but it is an exploratory read of player opinions, not a measured cause.</div>
+          <div class="plain">Note: across 47 live-service games I estimated how many hours in players tend to drop off (weighting reviews by playtime), then had a local AI read the reviews and group the reasons. It points to design and progression problems over monetization, but it is an exploratory read of player opinions, not a measured cause.</div>
           <div class="tags">
             <span class="tag">Python</span><span class="tag">Steam API</span><span class="tag">DeepSeek-R1</span><span class="tag">NLP</span><span class="tag">Data Viz</span>
           </div>
           <div class="links">
-            <a class="lnk solid" href="assets/looter_shooter_report.html" target="_blank" rel="noopener">Interactive report <span class="arr">↗</span></a>
-            <a class="lnk" href="assets/looter_shooter_intelligence.pdf" target="_blank" rel="noopener">Brief (PDF) <span class="arr">↗</span></a>
+            <a class="lnk solid" href="assets/looter_shooter_intelligence.pdf" target="_blank" rel="noopener">Read the brief (PDF) <span class="arr">↗</span></a>
           </div>
         </div>
       </article>
