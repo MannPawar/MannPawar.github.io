@@ -254,8 +254,9 @@
           <div class="cat">Optimization · Live demo</div>
           <h3>Stochastic Valorant Shotcaller</h3>
           <div class="role">MILP + ML + MDP team-economy optimizer</div>
-          <div class="desc">A data-driven economy optimizer for <em>Valorant</em>: a Mixed-Integer Linear Program (SciPy HiGHS) assigns team-wide loadouts, an XGBoost model trained on 2.9M round samples predicts round-win probability, and a Markov Decision Process solved by backward induction factors long-term economy value. An LLM layer adds context-aware tactical constraints. In a held-out simulation the EV-aware solver beats a naive save/buy rule by a small but consistent margin. Deployed as a live interactive app.</div>
-          <div class="metric">XGBoost AUC 0.71 · solver +0.45 rounds/match vs naive (95% CI 0.38 to 0.53; 4,000-match sim) · live app</div>
+          <div class="desc">A data-driven economy optimizer for <em>Valorant</em>: a Mixed-Integer Linear Program (SciPy HiGHS) assigns team-wide loadouts, an XGBoost model trained on 2.9M round samples predicts round-win probability, and a Markov Decision Process solved by backward induction factors long-term economy value. An LLM layer adds context-aware tactical constraints. In a paired simulation the EV-aware solver beats a naive save/buy rule by a clear, statistically significant margin. Deployed as a live interactive app.</div>
+          <div class="metric">XGBoost round-win model (AUC 0.71) · EV-aware solver +0.87 rounds/match vs naive (+7.2%, 95% CI 0.79 to 0.95, p &lt; 1e-89) · live app</div>
+          <div class="plain">In plain English: a model learns each round's win odds, and the optimizer buys to maximize them while protecting the future bank. Across 1,000 simulated matches it wins almost one extra round per match versus a simple "save or full-buy" rule. The comparison is paired (same matches for both), so the edge is reliable, not luck.</div>
           <div class="tags">
             <span class="tag">Python</span><span class="tag">MILP · HiGHS</span><span class="tag">XGBoost</span><span class="tag">MDP</span><span class="tag">Streamlit</span><span class="tag">LLM</span>
           </div>
@@ -277,6 +278,7 @@
           <div class="role">Can a utility model explain how players pick classes?</div>
           <div class="desc">A first-principles model of <em>Skyrim</em> build choice (efficiency, complexity, and an entropy term) solved with LP/MILP via SciPy HiGHS and Gurobi, then evaluated honestly on held-out data with bootstrap CIs and explicit ablations. The result is a candid mixed one: the model recovers the dominant Hybrid play-style but does not beat a simple empirical prior, evidence that class choice is driven by factors beyond the modeled utility. The value here is the rigorous, self-critical evaluation rather than a headline win.</div>
           <div class="metric">Recovers the dominant mode; candid finding: test MAE 0.086 does not beat the empirical prior</div>
+          <div class="plain">In plain English: I tried to predict which character classes players pick using only game mechanics (how efficient, complex, and varied each build is). The model nails the most popular play-style but is less accurate than simply assuming players act like the previous cohort. An honest negative result: real choices are shaped by more than the mechanics I modeled.</div>
           <div class="tags">
             <span class="tag">Python</span><span class="tag">LP / MILP</span><span class="tag">Gurobi</span><span class="tag">Entropy Objective</span><span class="tag">Reproducible</span>
           </div>
@@ -299,6 +301,7 @@
           <div class="role">Exploratory churn analysis across live-service titles</div>
           <div class="desc">A data pipeline over Steam's top titles: review text anchored to playtime telemetry to estimate a playtime-weighted "churn point" (when veterans drop off), with a local DeepSeek-R1 model surfacing the recurring themes behind it. Directional finding: design and progression issues, not monetization, dominate the qualitative complaints of long-time players. The themes are LLM-labeled and the metric is a proxy, so this is framed as exploratory market intelligence rather than a validated causal claim.</div>
           <div class="metric">47 titles · playtime-weighted churn proxy · LLM-surfaced themes (exploratory)</div>
+          <div class="plain">In plain English: across 47 live-service games I estimated how many hours in players tend to drop off (weighting reviews by playtime), then had a local AI read the reviews and group the reasons. It points to design and progression problems over monetization, but it is an exploratory read of player opinions, not a measured cause.</div>
           <div class="tags">
             <span class="tag">Python</span><span class="tag">Steam API</span><span class="tag">DeepSeek-R1</span><span class="tag">NLP</span><span class="tag">Data Viz</span>
           </div>
