@@ -221,16 +221,16 @@
 
       <!-- 1: Skyrim ABM -->
       <article class="card" data-cat="abm">
-        <div class="thumb" data-full="assets/img_skyrimabm_null.png">
-          <img src="assets/img_skyrimabm_null.png" alt="Structured vs null terminal opinion distributions">
+        <div class="thumb" data-full="assets/img_abm_validation.png">
+          <img src="assets/img_abm_validation.png" alt="Structured model produces echo chambers; the energy-matched null does not">
           <span class="zoom">click to enlarge</span>
         </div>
         <div class="card-body">
           <div class="cat">Agent-Based Modeling</div>
           <h3>Generative Opinion Dynamics in Skyrim</h3>
           <div class="role">Emergent political belief &amp; generative NPC dialogue</div>
-          <div class="desc">A stochastic agent-based model that evolves the political opinions of 1,010 named <em>Skyrim</em> NPCs through the Civil War: bounded-confidence influence, out-group repulsion, zealot anchoring, and a hold-clustered social network. Validated against an energy-matched null model with Kolmogorov-Smirnov tests, then coupled to a local small language model that voices each character from its emergent opinion state.</div>
-          <div class="metric">1,010 NPCs · 2 campaigns · 93% in-character dialogue</div>
+          <div class="desc">A stochastic agent-based model that evolves the political opinions of 1,010 named <em>Skyrim</em> NPCs through the Civil War: bounded-confidence influence, out-group repulsion, zealot anchoring, and a hold-clustered social network. To prove the social machinery (not the events) drives the outcome, it is tested against an <em>energy-matched</em> null with identical shocks: the structured model produces sharp echo chambers the null cannot. The emergent opinion of each character then conditions a local language model that voices them.</div>
+          <div class="metric">Beats an energy-matched null: separation 0.41 vs 0.24 · neutral-zone &lt;1% vs 21% · KS D = 0.37 · 1,010 NPCs</div>
           <div class="tags">
             <span class="tag">R</span><span class="tag">Agent-Based Modeling</span><span class="tag">Opinion Dynamics</span><span class="tag">SLM · Ollama</span><span class="tag">Monte Carlo</span>
           </div>
@@ -242,15 +242,16 @@
 
       <!-- 2: Valorant -->
       <article class="card" data-cat="opt">
-        <div class="thumb placeholder">
-          <div class="big">🛡️</div>
+        <div class="thumb" data-full="assets/img_valorant_result.png">
+          <img src="assets/img_valorant_result.png" alt="EV-aware solver beats naive on simulated win rate">
+          <span class="zoom">click to enlarge</span>
         </div>
         <div class="card-body">
           <div class="cat">Optimization · Live demo</div>
           <h3>Stochastic Valorant Shotcaller</h3>
           <div class="role">MILP + ML + MDP team-economy optimizer</div>
-          <div class="desc">A data-driven economy optimizer for <em>Valorant</em>: a Mixed-Integer Linear Program (SciPy HiGHS) assigns optimal team-wide loadouts, an XGBoost model trained on 2.9M rounds predicts round-win probability, and a Markov Decision Process solved by backward induction factors long-term economy value. An LLM layer adds context-aware tactical constraints. Deployed as a live interactive app.</div>
-          <div class="metric">2.9M rounds · MILP + XGBoost + MDP · live Streamlit app</div>
+          <div class="desc">A data-driven economy optimizer for <em>Valorant</em>: a Mixed-Integer Linear Program (SciPy HiGHS) assigns team-wide loadouts, an XGBoost model trained on 2.9M round samples predicts round-win probability, and a Markov Decision Process solved by backward induction factors long-term economy value. An LLM layer adds context-aware tactical constraints. In a held-out simulation the EV-aware solver beats a naive save/buy rule by a small but consistent margin. Deployed as a live interactive app.</div>
+          <div class="metric">XGBoost AUC 0.71 · EV-aware solver +2.0% win rate vs naive (1,000-match sim) · live app</div>
           <div class="tags">
             <span class="tag">Python</span><span class="tag">MILP · HiGHS</span><span class="tag">XGBoost</span><span class="tag">MDP</span><span class="tag">Streamlit</span><span class="tag">LLM</span>
           </div>
@@ -262,16 +263,16 @@
 
       <!-- 3: Skyrim Class Optimization -->
       <article class="card" data-cat="opt">
-        <div class="thumb" data-full="assets/img_skyrimclass_heatmap.png">
-          <img src="assets/img_skyrimclass_heatmap.png" alt="Roleplaying preference heatmap">
+        <div class="thumb" data-full="assets/img_class_result.png">
+          <img src="assets/img_class_result.png" alt="Utility model vs observed class distribution">
           <span class="zoom">click to enlarge</span>
         </div>
         <div class="card-body">
           <div class="cat">Optimization</div>
           <h3>Skyrim Class Optimization</h3>
-          <div class="role">Optimization model of character-build preferences</div>
-          <div class="desc">An optimization study of <em>Skyrim</em> character builds combining linear and mixed-integer programming (SciPy HiGHS, Gurobi piecewise-linear) with an entropy objective and an SLSQP multi-start fallback. Evaluated on held-out data with bootstrap uncertainty intervals and explicit ablations, all driven by a single deterministic, reproducible pipeline.</div>
-          <div class="metric">Held-out MAE · bootstrap CIs · 4 explicit ablations</div>
+          <div class="role">Can a utility model explain how players pick classes?</div>
+          <div class="desc">A first-principles model of <em>Skyrim</em> build choice (efficiency, complexity, and an entropy term) solved with LP/MILP via SciPy HiGHS and Gurobi, then evaluated honestly on held-out data with bootstrap CIs and explicit ablations. The result is a candid mixed one: the model recovers the dominant Hybrid play-style but does not beat a simple empirical prior, evidence that class choice is driven by factors beyond the modeled utility. The value here is the rigorous, self-critical evaluation rather than a headline win.</div>
+          <div class="metric">Recovers the dominant mode; candid finding: test MAE 0.086 does not beat the empirical prior</div>
           <div class="tags">
             <span class="tag">Python</span><span class="tag">LP / MILP</span><span class="tag">Gurobi</span><span class="tag">Entropy Objective</span><span class="tag">Reproducible</span>
           </div>
@@ -284,16 +285,16 @@
 
       <!-- 4: Looter-shooter churn -->
       <article class="card" data-cat="ml">
-        <div class="thumb" data-full="assets/img_looter_churn.png">
-          <img src="assets/img_looter_churn.png" alt="Sentiment vs churn point across Steam's Top 50">
+        <div class="thumb" data-full="assets/img_churn_result.png">
+          <img src="assets/img_churn_result.png" alt="Sentiment vs veteran churn point across live-service titles">
           <span class="zoom">click to enlarge</span>
         </div>
         <div class="card-body">
           <div class="cat">ML &amp; Analytics</div>
           <h3>The Silent Killers of Player Retention</h3>
-          <div class="role">Churn intelligence across Steam's Top 50 live-service titles</div>
-          <div class="desc">A market-intelligence pipeline analyzing churn across Steam's top 50 titles: review data from the Steam Web API anchored to playtime telemetry to compute a playtime-weighted "churn point," with a local DeepSeek-R1 reasoning model extracting 141 structural root causes. The finding: roughly 75% of churn traces to design/progression and technical debt, not monetization.</div>
-          <div class="metric">Top 50 titles · 141 root causes · playtime-weighted churn</div>
+          <div class="role">Exploratory churn analysis across live-service titles</div>
+          <div class="desc">A data pipeline over Steam's top titles: review text anchored to playtime telemetry to estimate a playtime-weighted "churn point" (when veterans drop off), with a local DeepSeek-R1 model surfacing the recurring themes behind it. Directional finding: design and progression issues, not monetization, dominate the qualitative complaints of long-time players. The themes are LLM-labeled and the metric is a proxy, so this is framed as exploratory market intelligence rather than a validated causal claim.</div>
+          <div class="metric">47 titles · playtime-weighted churn proxy · LLM-surfaced themes (exploratory)</div>
           <div class="tags">
             <span class="tag">Python</span><span class="tag">Steam API</span><span class="tag">DeepSeek-R1</span><span class="tag">NLP</span><span class="tag">Data Viz</span>
           </div>
