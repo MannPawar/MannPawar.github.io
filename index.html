@@ -1,535 +1,1235 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mann Pawar · Game AI & Computational Modeling</title>
-<meta name="description" content="Game AI and computational modeling portfolio: agent-based simulation, optimization, and machine learning applied to game worlds and player behavior.">
+<title>Mann Pawar</title>
+<meta name="description" content="Mann Pawar, data scientist researching behavioral AI: why players behave the way they do, and how AI and machine learning can make NPCs more believable.">
+<!--share-->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%237d0c14'/%3E%3Ctext x='32' y='47' font-family='Georgia,serif' font-size='42' text-anchor='middle' fill='%23e2e2e2'%3EM%3C/text%3E%3C/svg%3E">
+<link rel="canonical" href="https://mannpawar.github.io/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mann Pawar">
+<meta property="og:description" content="Data scientist researching behavioral AI: why players behave the way they do, and how AI can make NPCs believable.">
+<meta property="og:url" content="https://mannpawar.github.io/">
+<meta property="og:image" content="https://mannpawar.github.io/assets/wren-postcard-web.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<!--/share-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#0a0c11; --bg2:#0e111a; --surface:#13171f; --surface2:#171c26;
-    --line:#232a36; --text:#e9ecf3; --muted:#9aa4b6; --faint:#6b7484;
-    --a1:#7c5cff; --a2:#19d3ff; --a3:#34e7b0;
-    --grad:linear-gradient(120deg,var(--a1),var(--a2));
-    --shadow:0 10px 40px rgba(0,0,0,.45);
-  }
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{
-    margin:0;background:radial-gradient(1200px 700px at 80% -10%,rgba(124,92,255,.16),transparent 60%),
-                      radial-gradient(1000px 600px at -10% 10%,rgba(25,211,255,.10),transparent 55%),var(--bg);
-    color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-    line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;
-  }
-  a{color:inherit;text-decoration:none}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
-  h1,h2,h3{font-family:"Space Grotesk",Inter,sans-serif;line-height:1.15;margin:0}
+/* The printed annual: one vertical axis at 42% of the page; text pages hang from it, colour pages carry one figure. */
+:root {
+  color-scheme: light;
+  --bg: #e2e2e2;
+  --surface: #d6d6d6;
+  --ink: #7d0c14;
+  --muted: #7a4a4e;
+  --accent: #7d0c14;
+  --accent-ink: #e2e2e2;
+  --field: #7d0c14;
+  --field-ink: #e2e2e2;
+  --field-dim: #b04a52;
+  --field-2: #6a0a11;
 
-  /* nav */
-  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);
-      background:rgba(10,12,17,.6);border-bottom:1px solid transparent;transition:border-color .3s}
-  nav.scrolled{border-color:var(--line)}
-  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px}
-  .brand{font-family:"Space Grotesk";font-weight:700;letter-spacing:.2px;font-size:18px}
-  .brand .dot{color:var(--a2)}
-  .nav-links{display:flex;gap:26px;align-items:center}
-  .nav-links a{color:var(--muted);font-size:14px;font-weight:500;transition:color .2s}
-  .nav-links a:hover{color:var(--text)}
-  .nav-cta{padding:8px 16px;border-radius:999px;background:var(--grad);color:#06121a !important;font-weight:600}
-  @media(max-width:640px){.nav-links a:not(.nav-cta){display:none}}
+  --display: "Instrument Serif", "Times New Roman", serif;
+  --text: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
 
-  /* hero */
-  header.hero{padding:90px 0 40px;position:relative}
-  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);
-           border:1px solid var(--line);background:var(--surface);padding:6px 14px;border-radius:999px;margin-bottom:22px}
-  .eyebrow .pulse{width:8px;height:8px;border-radius:50%;background:var(--a3);box-shadow:0 0 0 0 rgba(52,231,176,.6);animation:pulse 2s infinite}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(52,231,176,.5)}70%{box-shadow:0 0 0 10px rgba(52,231,176,0)}100%{box-shadow:0 0 0 0 rgba(52,231,176,0)}}
-  .hero h1{font-size:clamp(38px,6vw,64px);font-weight:700;letter-spacing:-.5px}
-  .hero h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .hero p.lead{font-size:clamp(16px,2.2vw,20px);color:var(--muted);max-width:680px;margin:20px 0 0}
-  .hero .sub{color:var(--faint);max-width:660px;margin-top:10px;font-size:15px}
-  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
-  .btn{padding:12px 22px;border-radius:12px;font-weight:600;font-size:15px;transition:transform .15s,box-shadow .2s,background .2s;border:1px solid var(--line)}
-  .btn.primary{background:var(--grad);color:#06121a;border:none;box-shadow:0 8px 24px rgba(124,92,255,.3)}
-  .btn.ghost{background:var(--surface);color:var(--text)}
-  .btn:hover{transform:translateY(-2px)}
+  --step-small: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);
+  --step-body: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  --step-lead: clamp(1.375rem, 1.2rem + 0.6vw, 1.75rem);
+  --step-head: clamp(2.75rem, 1.6rem + 3.6vw, 5rem);
+  --step-display: clamp(4.5rem, 1rem + 10vw, 11rem);
 
-  /* section heading */
-  .sec{padding:70px 0 10px}
-  .sec-h{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:8px;flex-wrap:wrap}
-  .sec-h h2{font-size:clamp(26px,4vw,36px);font-weight:700}
-  .sec-h p{color:var(--muted);margin:6px 0 0;max-width:520px;font-size:15px}
+  --m: clamp(20px, 2.4vw, 40px);
+  --cols: 42fr 58fr;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--text);
+  font-size: var(--step-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; }
+a { color: inherit; text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
+::selection { background: var(--ink); color: var(--bg); }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; letter-spacing: -0.01em; line-height: 0.92; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.ph { filter: grayscale(1) contrast(1.05); object-fit: cover; width: 100%; height: 100%; }
 
-  /* filters */
-  .filters{display:flex;gap:10px;flex-wrap:wrap;margin:26px 0 30px}
-  .chip{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--surface);
-        color:var(--muted);font-size:13.5px;font-weight:500;cursor:pointer;transition:all .2s}
-  .chip:hover{color:var(--text);border-color:#39435a}
-  .chip.active{background:var(--grad);color:#06121a;border-color:transparent;font-weight:600}
+/* every page section shares one two-column template, so the axis never moves */
+.page { display: grid; grid-template-columns: var(--cols); padding-inline: var(--m); }
+.page > .side { padding-right: clamp(24px, 4vw, 72px); min-width: 0; }
+.page > .main { min-width: 0; }
+.sec { padding-block: 200px 0; }
 
-  /* project grid */
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
-  @media(max-width:820px){.grid{grid-template-columns:1fr}}
-  .card{background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line);
-        border-radius:18px;overflow:hidden;display:flex;flex-direction:column;
-        opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease,border-color .25s,box-shadow .25s}
-  body:not(.js) .card{opacity:1;transform:none}
-  .card.in{opacity:1;transform:none}
-  .card:hover{box-shadow:var(--shadow);border-color:#3b455c}
-  .card.hide{display:none}
-  .thumb{position:relative;aspect-ratio:16/9;background:#0c0f16;overflow:hidden;cursor:pointer}
-  .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;display:block}
-  .card:hover .thumb img{transform:scale(1.05)}
-  .thumb.placeholder{display:flex;align-items:center;justify-content:center;
-      background:radial-gradient(600px 200px at 30% 0%,rgba(124,92,255,.25),transparent),linear-gradient(120deg,#141a2a,#0e1119)}
-  .thumb.placeholder .big{font-size:44px;filter:drop-shadow(0 6px 18px rgba(0,0,0,.5))}
-  .thumb .zoom{position:absolute;right:10px;bottom:10px;background:rgba(8,10,15,.7);border:1px solid var(--line);
-      color:var(--muted);font-size:11px;padding:4px 9px;border-radius:8px;opacity:0;transition:opacity .2s}
-  .thumb:hover .zoom{opacity:1}
-  .card-body{padding:20px 20px 22px;display:flex;flex-direction:column;flex:1}
-  .cat{font-size:11.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--a2);font-weight:600;margin-bottom:8px}
-  .card h3{font-size:20px;font-weight:600}
-  .card .role{color:var(--faint);font-size:13.5px;margin:3px 0 12px}
-  .card .desc{color:var(--muted);font-size:14px;flex:1}
-  .metric{margin:14px 0 6px;font-size:13px;color:var(--a3);font-weight:600;font-family:"Space Grotesk"}
-  .metric.help{cursor:help;display:inline-block}
-  .plain{margin:0 0 12px;font-size:12px;color:var(--muted);line-height:1.45}
-  .plain b{color:var(--text);font-weight:600}
-  .tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
-  .tag{font-size:11.5px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);padding:4px 9px;border-radius:7px}
-  .links{display:flex;gap:10px;flex-wrap:wrap}
-  .lnk{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;
-       padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg2);transition:all .2s}
-  .lnk:hover{transform:translateY(-2px);border-color:#3b455c}
-  .lnk.solid{background:var(--grad);color:#06121a;border:none}
-  .lnk .arr{transition:transform .2s}
-  .lnk:hover .arr{transform:translate(2px,-2px)}
+.btn {
+  display: inline-flex; align-items: center; gap: 10px; justify-content: center;
+  min-height: 48px; padding: 12px 22px;
+  background: var(--accent); color: var(--accent-ink);
+  font: 600 var(--step-small)/1 var(--text);
+  text-decoration: none; border: 0; cursor: pointer;
+  transition: transform 160ms var(--ease-out), background-color 160ms ease;
+}
+.btn:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) { .btn:hover { background: #5e0a10; } }
 
-  /* about */
-  .about{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:36px;margin-top:18px}
-  .about p{color:var(--muted);margin:0 0 14px}
-  .about p:last-child{margin-bottom:0}
-  .about strong{color:var(--text)}
-  .about a,.sec-h a{color:var(--a2);font-weight:600;border-bottom:1px solid rgba(25,211,255,.35)}
-  .about a:hover,.sec-h a:hover{border-bottom-color:var(--a2)}
+/* ---------- masthead ---------- */
+.mast { min-height: 100svh; display: grid; grid-template-rows: auto 44svh 1fr; }
+.topbar { display: grid; grid-template-columns: var(--cols); padding: 20px var(--m); align-items: center; }
+.topbar .wm { font-weight: 600; text-decoration: none; }
+.topbar .right { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.topbar nav { display: flex; gap: 28px; font-size: var(--step-small); }
+.topbar nav a { text-decoration: none; padding: 12px 0; }
+@media (hover: hover) and (pointer: fine) { .topbar nav a:hover { text-decoration: underline; } }
 
-  footer{margin:70px 0 50px;padding-top:28px;border-top:1px solid var(--line);
-         display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--faint);font-size:13.5px}
-  footer a{color:var(--muted)}footer a:hover{color:var(--text)}
+.mosaic { display: grid; grid-template-columns: 1.3fr 0.75fr 1.05fr 1.2fr 1.1fr; overflow: hidden; }
+.mosaic .ph.lift { filter: contrast(1.08); }
+.mosaic > * { min-width: 0; overflow: hidden; }
 
-  /* lightbox */
-  .lb{position:fixed;inset:0;background:rgba(5,7,11,.92);display:none;align-items:center;justify-content:center;
-      z-index:100;padding:30px;cursor:zoom-out}
-  .lb.open{display:flex}
-  .lb img{max-width:95%;max-height:92%;border-radius:12px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.title { align-items: end; padding-block: 40px 48px; }
+.title .side p { font-size: var(--step-body); color: var(--muted); max-width: 32ch; }
+.title h1 { font-size: var(--step-display); line-height: 0.86; letter-spacing: -0.02em; margin-left: -0.04em; }
+.title .lead { font-size: var(--step-lead); line-height: 1.3; max-width: 40ch; margin-top: 24px; }
+.mask { display: block; overflow: hidden; padding-bottom: 0.06em; }
+.mask > span { display: block; }
 
-  /* ---------- games-y FX ---------- */
-  #fx{position:fixed;inset:0;z-index:0;pointer-events:none}
-  nav,header,section,footer,.wrap{position:relative;z-index:1}
-  .aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-  .aurora b{position:absolute;border-radius:50%;filter:blur(80px);opacity:.45;mix-blend-mode:screen}
-  .aurora b:nth-child(1){width:420px;height:420px;background:#7c5cff;top:-90px;left:-60px;animation:drift1 19s ease-in-out infinite}
-  .aurora b:nth-child(2){width:380px;height:380px;background:#19d3ff;top:8%;right:-100px;animation:drift2 23s ease-in-out infinite}
-  .aurora b:nth-child(3){width:360px;height:360px;background:#f0a83c;bottom:-150px;left:34%;animation:drift3 27s ease-in-out infinite}
-  @keyframes drift1{50%{transform:translate(120px,80px) scale(1.15)}}
-  @keyframes drift2{50%{transform:translate(-110px,60px) scale(1.12)}}
-  @keyframes drift3{50%{transform:translate(70px,-90px) scale(1.2)}}
+/* ---------- intro ---------- */
+.facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; }
+.facts b { display: block; font-family: var(--display); font-weight: 400; font-size: var(--step-head); line-height: 0.95; font-variant-numeric: tabular-nums; }
+.facts span { display: block; font-size: var(--step-small); color: var(--muted); margin-top: 6px; }
+.intro .main p + p { margin-top: 1em; }
+.intro .main p { max-width: 36em; }
+.intro .main p.first { font-size: var(--step-lead); line-height: 1.3; margin-bottom: 1.4em; max-width: 36ch; }
 
-  /* shimmering hero title */
-  .hero h1 .grad{background:linear-gradient(120deg,#7c5cff,#19d3ff,#34e7b0,#7c5cff);
-    background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
-    animation:shimmer 9s linear infinite}
-  @keyframes shimmer{to{background-position:300% 0}}
+/* ---------- research ---------- */
+.sec h2 { font-size: var(--step-head); }
+.head-row { margin-bottom: 40px; }
+.entry { display: grid; grid-template-columns: var(--cols); padding-inline: var(--m); padding-block: 36px; }
+.entry .main { grid-column: 2; grid-row: 1; }
+.entry .side { grid-column: 1; grid-row: 1; padding-right: clamp(24px, 4vw, 72px); text-align: right; font-size: var(--step-small); color: var(--muted); }
+.entry .st { display: inline-block; background: var(--ink); color: var(--bg); padding: 2px 8px; font-weight: 600; margin-right: 6px; }
+.entry .side .fig { font-family: var(--display); font-size: var(--step-head); line-height: 0.95; color: var(--ink); font-variant-numeric: tabular-nums; }
+.entry .side p + p { margin-top: 6px; }
+.entry h3 { font-size: var(--step-head); }
+.entry .main { transition: color 200ms ease; }
+.entry .kind { margin-top: 10px; color: var(--muted); font-size: var(--step-small); }
+.entry .detail { margin-top: 16px; max-width: 38em; }
+@media (hover: hover) and (pointer: fine) { .entries:has(.entry:hover) .entry:not(:hover) .main { color: var(--muted); } }
 
-  /* card: glow border, cursor spotlight, sheen sweep, 3D tilt */
-  .card{transform-style:preserve-3d;will-change:transform}
-  .card.tilt{transition:transform .08s ease-out,box-shadow .25s,border-color .25s}
-  .card::before{content:"";position:absolute;inset:0;border-radius:18px;padding:1px;pointer-events:none;z-index:4;
-    background:linear-gradient(130deg,rgba(124,92,255,.7),rgba(25,211,255,.55),transparent 65%);
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .3s}
-  .card:hover::before{opacity:1}
-  .card .glow{position:absolute;inset:0;border-radius:18px;pointer-events:none;z-index:3;opacity:0;transition:opacity .3s;
-    background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),rgba(124,92,255,.16),transparent 60%)}
-  .card:hover .glow{opacity:1}
-  .card .sheen{position:absolute;inset:0;border-radius:18px;pointer-events:none;z-index:3;opacity:0;
-    background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.10) 46%,transparent 60%);
-    transform:translateX(-60%)}
-  .card:hover .sheen{opacity:1;animation:sweep 1.1s ease}
-  @keyframes sweep{from{transform:translateX(-60%)}to{transform:translateX(60%)}}
+/* ---------- rumour, a colour page ---------- */
+.field { background: var(--field); color: var(--field-ink); margin-top: 200px; padding-block: 96px; }
+.field ::selection { background: var(--field-ink); color: var(--field); }
+.field h2 { font-size: var(--step-head); }
+.field .how { margin-top: 20px; max-width: 34ch; }
+.sim-count { margin-top: 40px; }
+.sim-count .n { display: block; font-family: var(--display); font-size: var(--step-display); line-height: 0.85; font-variant-numeric: tabular-nums; }
+.sim-count small { display: block; font-size: var(--step-small); margin-top: 8px; }
+.sim-btns { display: flex; gap: 8px; margin-top: 28px; flex-wrap: wrap; }
+.field .btn { background: var(--field-ink); color: var(--field); }
+@media (hover: hover) and (pointer: fine) { .field .btn:hover { background: #ffffff; } }
+.field .btn.ghost { background: var(--field-2); color: var(--field-ink); }
+@media (hover: hover) and (pointer: fine) { .field .btn.ghost:hover { background: #520609; } }
+.field canvas { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; background: var(--field-2); cursor: crosshair; touch-action: manipulation; }
+.field .note { margin-top: 20px; font-size: var(--step-small); max-width: 60ch; }
+.field canvas#war-map { aspect-ratio: 10 / 7; background: var(--bg); cursor: default; }
+.field canvas#war-hist { aspect-ratio: 50 / 11; background: var(--bg); margin-top: 6px; cursor: default; }
+.seg { border: 0; margin: 28px 0 0; padding: 0; min-width: 0; }
+.seg legend { padding: 0; font-size: var(--step-small); margin-bottom: 8px; }
+.seg label { display: inline-flex; cursor: pointer; }
+.seg input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.seg span { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 16px; background: var(--field-2); font-size: var(--step-small); font-weight: 600; transition: background-color 160ms ease, color 160ms ease; }
+.seg label + label span { margin-left: 4px; }
+.seg input:checked + span { background: var(--field-ink); color: var(--field); }
+.seg input:focus-visible + span { outline: 3px solid var(--field-ink); outline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) { .seg input:not(:checked) + span:hover { background: #520609; } }
+.war-stats { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 8px 32px; margin: 32px 0 0; }
+.war-stats div { display: flex; flex-direction: column-reverse; }
+.war-stats dt { font-size: var(--step-small); margin-top: 6px; }
+.war-stats dd { margin: 0; font-family: var(--display); font-size: var(--step-head); line-height: 0.95; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.war-event { margin-top: 16px; font-weight: 600; min-height: 1.5em; }
+.war-who { margin-top: 10px; font-size: var(--step-small); min-height: 1.5em; }
+.war-axis { display: flex; justify-content: space-between; font-size: var(--step-small); margin-top: 8px; }
 
-  /* loot-rarity accent bar on each card */
-  .card .rarity{position:absolute;top:0;left:0;right:0;height:3px;z-index:5;pointer-events:none;
-    background:linear-gradient(90deg,transparent,var(--rc,#7c5cff) 45%,#fff 50%,var(--rc,#7c5cff) 55%,transparent);
-    background-size:220% 100%;animation:rarityflow 3.6s linear infinite;opacity:.85}
-  @keyframes rarityflow{to{background-position:-220% 0}}
+/* ---------- work ---------- */
+.figure { margin: 0; }
+.figure .meter { margin-top: 20px; }
+.meter div { display: grid; grid-template-columns: 4.6em 1fr; align-items: center; gap: 12px; font-size: var(--step-small); font-variant-numeric: tabular-nums; }
+.meter div + div { margin-top: 8px; }
+.meter .fill { display: block; height: 28px; background: var(--surface); width: var(--w); transform-origin: left; }
+.meter div:last-child .fill { background: var(--ink); }
+.figure figcaption { font-size: var(--step-small); color: var(--muted); margin-top: 14px; max-width: 30ch; }
+.figure .big { font-family: var(--display); font-size: var(--step-head); line-height: 0.95; font-variant-numeric: tabular-nums; }
+.bars details { background: var(--surface); }
+.bars details + details { margin-top: 6px; }
+.bars summary {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; gap: 16px;
+  min-height: 64px; padding: 14px 22px;
+  font-weight: 600;
+  transition: background-color 160ms ease;
+}
+.bars summary::-webkit-details-marker { display: none; }
+.bars summary .when { margin-left: auto; font-weight: 400; font-size: var(--step-small); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.bars summary .plus { flex: none; width: 18px; text-align: center; font-weight: 400; transition: transform 200ms var(--ease-out); }
+.bars details[open] .plus { transform: rotate(45deg); }
+@media (hover: hover) and (pointer: fine) { .bars summary:hover { background: #cdcdcd; } }
+.bars .panel { padding: 0 22px 26px; }
+.bars .sub { color: var(--muted); font-size: var(--step-small); margin-bottom: 14px; }
+.bars ul { margin: 0; padding: 0; list-style: none; }
+.bars li { display: grid; grid-template-columns: 1fr auto; gap: 20px; }
+.bars li + li { margin-top: 14px; }
+.bars li b { font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
 
-  /* pulsing primary button */
-  .btn.primary{position:relative}
-  .btn.primary::after{content:"";position:absolute;inset:0;border-radius:12px;pointer-events:none;
-    box-shadow:0 0 0 0 rgba(124,92,255,.45);animation:glowpulse 2.8s ease-out infinite}
-  @keyframes glowpulse{0%{box-shadow:0 0 0 0 rgba(124,92,255,.45)}70%{box-shadow:0 0 0 16px rgba(124,92,255,0)}100%{box-shadow:0 0 0 0 rgba(124,92,255,0)}}
+/* ---------- about, a tone page ---------- */
+.tone { background: var(--surface); margin-top: 200px; padding-block: 140px; }
+.tone .facts b { font-size: var(--step-lead); font-family: var(--text); font-weight: 600; line-height: 1.2; }
+.statement { font-size: var(--step-lead); line-height: 1.35; max-width: 34em; }
+.statement + .statement { margin-top: 1em; }
+.statement .mark { background: var(--ink); color: var(--bg); padding: 0 0.15em; }
+.about h2 { font-size: var(--step-head); margin-bottom: 48px; }
+.about > .main { grid-column: 2; grid-row: 1; }
+.about > .side { grid-column: 1; grid-row: 1; }
 
-  @media(prefers-reduced-motion:reduce){
-    .aurora b,.hero h1 .grad,.btn.primary::after,.card:hover .sheen{animation:none}
-  }
+/* ---------- contact ---------- */
+.contact { padding-block: 160px 120px; }
+.contact .side p { font-family: var(--display); font-size: var(--step-head); line-height: 0.98; }
+.contact .main { display: grid; grid-template-columns: 170px 1fr; gap: 32px; align-content: start; }
+.contact .pic img { width: 100%; height: 100%; object-fit: cover; }
+.contact .pic { width: 170px; height: 170px; margin: 0; }
+.contact h2 { font-family: var(--text); font-weight: 600; font-size: var(--step-lead); line-height: 1.2; letter-spacing: 0; }
+.contact ul { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 6px; font-size: var(--step-lead); }
+.contact ul a { display: inline-block; padding: 4px 0; transition: color 160ms ease; }
+@media (hover: hover) and (pointer: fine) { .contact ul a:hover { color: #4a060b; } }
+.contact .city { margin-top: 18px; color: var(--muted); font-size: var(--step-small); }
+
+/* ---------- footer, the red close ---------- */
+footer { background: var(--field); color: var(--field-ink); display: grid; grid-template-rows: auto auto; row-gap: 56px; padding: 56px var(--m) 28px; }
+footer ::selection { background: var(--field-ink); color: var(--field); }
+.fcols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; font-size: var(--step-small); }
+.fcols p:first-child { font-weight: 600; margin-bottom: 8px; }
+.fcols a { display: inline-block; padding: 10px 0; }
+.fcols .credit { line-height: 2.1; }
+.fcols .credit a { display: inline; padding: 0; }
+.legal { font-size: var(--step-small); }
+
+/* ---------- critique pass ---------- */
+.btn:focus-visible { outline-color: var(--ink); }
+.field .btn:focus-visible, footer :focus-visible { outline-color: var(--field-ink); }
+.side-sticky { position: sticky; top: 32px; display: grid; gap: 56px; }
+.meter.split div { grid-template-columns: 1fr auto; row-gap: 6px; }
+.meter.split div + div { margin-top: 14px; }
+.meter.split .fill { grid-column: 1 / -1; background: var(--ink); }
+.meter.split div:last-child .fill { background: var(--surface); }
+h3.group { font-size: var(--step-lead); margin: 48px 0 16px; }
+.thesis { font-size: var(--step-lead); line-height: 1.3; max-width: 42ch; margin-top: 28px; }
+.strand { margin-top: 96px; background: var(--surface); padding-block: 44px; align-items: end; }
+.strand h3.group { margin: 0; font-size: var(--step-head); }
+.question { color: var(--muted); text-align: right; margin-left: auto; max-width: 32ch; }
+.strand .main { grid-column: 2; grid-row: 1; }
+.strand .side { grid-column: 1; grid-row: 1; align-self: end; padding-right: clamp(24px, 4vw, 72px); }
+.entry .side .meter.split { margin-top: 12px; text-align: left; }
+h2 + h3.group { margin-top: 36px; }
+.bars summary .t { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.bars summary .t b { font-weight: 600; }
+.bars summary .res { font-weight: 400; font-size: var(--step-small); color: var(--muted); }
+.bars summary { transition: background-color 160ms ease, transform 160ms var(--ease-out); }
+.bars summary:active { transform: scale(0.99); }
+.plates-note { margin-top: 14px; font-size: var(--step-small); line-height: 1.6; }
+.plates-note a { text-underline-offset: 0.18em; }
+.about-lists { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 72px; }
+.about-lists h3 { font-size: var(--step-lead); margin-bottom: 16px; }
+.about-lists ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+.about-lists b { display: block; font-weight: 600; }
+.about-lists span { display: block; color: var(--muted); font-size: var(--step-small); margin-top: 2px; }
+:root { interpolate-size: allow-keywords; }
+.bars details::details-content { block-size: 0; overflow: clip; transition: block-size 220ms var(--ease-out), content-visibility 220ms allow-discrete; }
+.bars details[open]::details-content { block-size: auto; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+@media (prefers-reduced-motion: reduce) { .bars details::details-content { transition: none; } }
+@media (min-width: 761px) and (max-width: 1100px) {
+  .mast { min-height: 0; grid-template-rows: auto 40vw auto; }
+}
+@media (max-width: 760px) {
+  .side-sticky { position: static; }
+  .about-lists { grid-template-columns: 1fr; margin-top: 48px; }
+}
+
+/* ---------- motion ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .js .mask > span { transform: translateY(105%); transition: transform 900ms var(--ease-out); }
+  .js.loaded .mask > span { transform: none; }
+  .js .after { opacity: 0; transform: translateY(12px); transition: opacity 400ms var(--ease-out) 200ms, transform 400ms var(--ease-out) 200ms; }
+  .js.loaded .after { opacity: 1; transform: none; }
+  /* text unrolls downward like a sheet; headings slide out sideways from the axis */
+  .js .rise { opacity: 0; transform-origin: 50% 0; transform: perspective(900px) rotateX(-32deg) translateY(10px); transition: opacity 600ms var(--ease-out), transform 1000ms var(--ease-out); transition-delay: calc(var(--i, 0) * 80ms); }
+  .js h2.rise, .js h3.rise { transform: translateX(-40px); transition: opacity 700ms var(--ease-out), transform 900ms var(--ease-out); transition-delay: calc(var(--i, 0) * 80ms); }
+  .js .rise.in { opacity: 1; transform: none; }
+  /* the name: dots stand in for the letters until they have formed */
+  .js.dots .mask > span { transform: none; opacity: 0; transition: opacity 450ms var(--ease-out); }
+  .js.dots.formed .mask > span { opacity: 1; }
+  .js.dots:not(.formed) .mask > span { transition: none; }
+  .name-dots { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1; transition: opacity 500ms var(--ease-out); }
+  .name-dots.gone { opacity: 0; }
+  /* red panels open from a thin line on the axis */
+  .fold { position: relative; isolation: isolate; }
+  .fold > * { position: relative; z-index: 1; }
+  .fold::before, .fold::after { content: ""; position: absolute; top: 0; bottom: 0; z-index: 0; background: var(--bg); transition: transform 850ms var(--ease-in-out); }
+  .fold::before { left: 0; width: 42%; transform-origin: 0 50%; }
+  .fold::after { right: 0; width: calc(58% - 3px); transform-origin: 100% 50%; }
+  .fold.open::before, .fold.open::after { transform: scaleX(0); }
+  /* the footer name rises letter by letter */
+  /* the churn bars grow one after another */
+  .js .meter.split div:nth-child(2) .fill { transition-delay: 380ms; }
+  .js .meter.split div:nth-child(3) .fill { transition-delay: 560ms; }
+  .js .meter .fill { transform: scaleX(0); transition: transform 1.1s var(--ease-out) 200ms; }
+  .js .meter.in .fill { transform: none; }
+}
+
+/* ---------- phone ---------- */
+@media (max-width: 760px) {
+  :root { --cols: 1fr; }
+  .page > .side, .entry .side { padding-right: 0; }
+  .mast { grid-template-rows: auto 36svh auto; min-height: 0; }
+  .topbar { grid-template-columns: 1fr auto; }
+  .topbar nav { grid-column: 1 / -1; order: 3; gap: 20px; margin-top: 4px; }
+  .topbar .right { display: contents; }
+  .topbar .btn { justify-self: end; }
+  .mosaic { grid-template-columns: 1.2fr 0.7fr 1fr 1fr; }
+  .mosaic > :nth-child(n+5) { display: none; }
+  .title { padding-block: 32px 40px; }
+  .title .side { order: 2; margin-top: 20px; }
+  .title h1 { font-size: 22vw; }
+  .sec { padding-top: 120px; }
+  .intro .side { order: 2; margin-top: 48px; }
+  .facts { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .facts b { font-size: 2rem; }
+  .entry .side, .entry .main, .about > .main, .about > .side { grid-column: 1; grid-row: auto; }
+  .entry .side { text-align: left; margin-top: 16px; }
+  .entry { padding-block: 28px; }
+  /* phones: drop what is said again elsewhere */
+  .plates-note, #work > .side, .tone .page.about > .side { display: none; }
+  .about-lists li b, .about-lists li span { display: inline; }
+  .about-lists li b::after { content: ": "; }
+  .about-lists ul { gap: 10px; }
+  .fcols .credit { line-height: 1.75; }
+  .tone { padding-block: 48px; }
+  .contact { padding-block: 72px 56px; }
+  .sec { padding-top: 72px; }
+  .statement { font-size: var(--step-body); line-height: 1.55; }
+  .about h2 { margin-bottom: 28px; }
+  .fcols .credit { line-height: 1.55; }
+  .field, .tone { margin-top: 88px; padding-block: 56px; }
+  .strand { margin-top: 56px; padding-block: 32px; }
+  .contact { padding-block: 88px 64px; }
+  .about-lists { margin-top: 36px; gap: 28px; }
+  h3.group { margin-top: 36px; }
+  .strand .main, .strand .side { grid-column: 1; grid-row: auto; }
+  .strand .side { padding-right: 0; }
+  .question { text-align: left; margin: 10px 0 0; }
+  .head-row { margin-bottom: 8px; }
+  .field, .tone { margin-top: 120px; padding-block: 72px; }
+  .field .main { margin-top: 32px; }
+  #work .side { order: 2; margin-top: 48px; }
+  .tone .facts { grid-template-columns: 1fr; order: 2; margin-top: 40px; }
+  .tone .side { order: 2; }
+  .contact { padding-block: 120px 80px; }
+  .contact .side { margin-bottom: 36px; }
+
+  .contact .main { grid-template-columns: 96px 1fr; gap: 20px; }
+  .contact .pic { width: 96px; height: 96px; }
+  .fcols { grid-template-columns: 1fr 1fr; row-gap: 32px; }
+  .fcols .credit { grid-column: 1 / -1; }
+}
 </style>
 </head>
 <body>
-<canvas id="fx"></canvas>
-<div class="aurora"><b></b><b></b><b></b></div>
-<nav>
-  <div class="wrap nav-in">
-    <div class="brand">Mann Pawar<span class="dot">.</span></div>
-    <div class="nav-links">
-      <a href="#projects">Projects</a>
-      <a href="#about">About</a>
-      <a class="nav-cta" href="mailto:mannspawar1@gmail.com">Contact</a>
+<script>document.documentElement.classList.add('js')</script>
+
+<header class="mast" id="top">
+  <div class="topbar">
+    <a class="wm" href="#top">Mann Pawar</a>
+    <div class="right">
+      <nav aria-label="Sections"><a href="#research">Research</a><a href="#work">Work</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
+      <a class="btn" href="mailto:mannspawar1@gmail.com?subject=Hello%20Mann">Email me <span aria-hidden="true">→</span></a>
     </div>
   </div>
-</nav>
 
-<header class="hero">
-  <div class="wrap">
-    <div class="eyebrow"><span class="pulse"></span> Game AI &amp; Computational Modeling</div>
-    <h1>Building <span class="grad">intelligent, believable</span><br>game systems.</h1>
-    <p class="lead">I model the things games usually leave static: how populations form beliefs, how teams optimize under uncertainty, and why players actually leave.</p>
-    <p class="sub">MS in Business Analytics, William &amp; Mary (2026). Agent-based simulation, optimization, and machine learning applied to game worlds and player behavior.</p>
-    <div class="hero-actions">
-      <a class="btn primary" href="#projects">View projects</a>
-      <a class="btn ghost" href="mailto:mannspawar1@gmail.com">Get in touch</a>
+  <div class="mosaic">
+    <div><img class="ph" src="assets/wren-postcard-web.jpg" width="1600" height="972" alt="Postcard of the Wren Building at William &amp; Mary, about 1910" style="object-position:48% 45%"></div>
+    <div><img class="ph" src="assets/rajabai-tower.jpg" width="1200" height="1600" alt="The Rajabai Clock Tower at the University of Mumbai, framed by trees" style="object-position:50% 30%"></div>
+    <div><img class="ph" src="assets/crim-dell-web.jpg" width="1400" height="1050" alt="The Crim Dell bridge at William &amp; Mary" style="object-position:40% 50%"></div>
+    <div><img class="ph lift" src="assets/the-chess-players-web.jpg" width="1600" height="1188" alt="The Chess Players by Thomas Eakins, 1876: two men at a chessboard while a third watches" style="object-position:40% 58%; transform: scale(1.16)"></div>
+    <div><img class="ph" src="assets/street-crowd-1908.jpg" width="1600" height="1176" alt="A crowd in hats gathered in Union Square, New York, to hear a street speaker in 1908" style="object-position:58% 80%; transform: scale(1.3)"></div>
+  </div>
+
+  <div class="page title">
+    <div class="side"><p class="after">Open to research collaborations on player behavior, NPC design and behavioral AI.</p>
+      <p class="after plates-note">Pictured above: <a href="#about">William &amp; Mary</a>, <a href="#about">the University of Mumbai’s Rajabai Clock Tower</a>, <a href="#about">Crim Dell</a>, <a href="#research">Thomas Eakins’s <i>The Chess Players</i></a> and <a href="#civil-war">a 1908 crowd gathered to hear a speech</a>.</p></div>
+    <div class="main">
+      <h1><span class="mask"><span>Mann Pawar</span></span></h1>
+      <p class="lead after">Data scientist researching behavioral AI: why players behave the way they do, and how AI can make NPCs believable.</p>
     </div>
-
   </div>
 </header>
 
-<section class="sec" id="projects">
-  <div class="wrap">
-    <div class="sec-h">
-      <div>
-        <h2>Selected projects</h2>
-        <p>Computational models and AI systems built around games, each with live results you can open. Full code and documentation for every project lives on <a href="https://github.com/MannPawar" target="_blank" rel="noopener">GitHub</a>.</p>
+<section class="sec page intro" aria-labelledby="intro-h">
+  <div class="side">
+    <ul class="facts">
+      <li class="rise"><b>4.00</b><span>GPA, MS Business Analytics</span></li>
+      <li class="rise" style="--i:1"><b>1 of 60</b><span>Class rank, William &amp; Mary</span></li>
+      <li class="rise" style="--i:2"><b>2</b><span>First-author papers, one accepted</span></li>
+    </ul>
+  </div>
+  <div class="main">
+    <h2 id="intro-h" class="rise" style="margin-bottom:40px">In short</h2>
+    <p class="first rise">I research behavioral AI: why players behave the way they do, and how AI can help us learn it.</p>
+    <p class="rise">I use what I learn to build better NPCs, with agent-based models and machine learning giving game characters opinions, memories and reasons of their own.</p>
+    <p class="rise" style="--i:1">I graduated from the MS in Business Analytics at William &amp; Mary on May 16, 2026, on a full-tuition merit scholarship, as a member of Beta Gamma Sigma.</p>
+    <p class="rise" style="--i:2">My first-author prototype paper, Grant Central Station, has been accepted at Pre-ICIS SIGDSA 2026. A second, on a benchmark for cash reconciliation, is being written. <a href="#research">Read about my independent research</a>.</p>
+    <p class="rise" style="--i:3">From November 2026 I will be a Research Intern at Beth Israel Deaconess Medical Center (BIDMC), working with Dr. Walid Yassine.</p>
+  </div>
+</section>
+
+<section class="sec" id="research" aria-labelledby="research-h">
+  <div class="page head-row">
+    <div class="side"></div>
+    <div class="main">
+      <h2 id="research-h" class="rise">Research</h2>
+      <p class="thesis rise" style="--i:1">Behavioral AI: why players behave the way they do, and how machine learning can turn that into believable NPCs.</p>
+    </div>
+  </div>
+  <div class="page strand"><div class="main"><h3 class="group rise">Why players behave the way they do</h3></div><div class="side"><p class="question rise" style="--i:1">What makes people quit a game, and who prefers which kinds of play?</p></div></div>
+  <div class="entries">
+    <article class="entry rise">
+      <div class="main">
+        <h3>The Silent Killers of Player Retention</h3>
+        <p class="kind">Churn study of Steam’s top 50 games · briefed and reviewed by Kent Rollins (General Intuition, formerly Riot and Epic)</p>
+        <p class="detail">Reviews pulled through the Steam Web API and weighted by playtime to find where players quit. A local DeepSeek-R1 extracted 141 root causes across 47 games. Churn comes in walls: optimization debt before 15 hours, a veteran wall past 400 hours, and genre friction where working mechanics break the rules players expect.</p>
+      </div>
+      <div class="side"><p class="cap">Drivers of churn across 47 games</p>
+        <div class="meter split" role="img" aria-label="Design and progression 40.4%, technical stability 34.8%, other causes 24.8%">
+          <div><span>Design and progression</span><span>40.4%</span><span class="fill" style="--w:40.4%"></span></div>
+          <div><span>Technical stability</span><span>34.8%</span><span class="fill" style="--w:34.8%"></span></div>
+          <div><span>Other causes, monetization among them</span><span>24.8%</span><span class="fill" style="--w:24.8%"></span></div>
+        </div></div>
+    </article>
+    <article class="entry rise">
+      <div class="main">
+        <h3>Neurodiversity and Play</h3>
+        <p class="kind">Survey reanalysis · 1,603 board gamers</p>
+        <p class="detail">A reanalysis of a 1,603-respondent board-gamer survey using PCA, latent profiles and equivalence tests, asking how neurodivergent and neurotypical players differ in what and where they play. The platform-preference model reaches a cross-validated AUC of 0.86.</p>
+      </div>
+      <div class="side"><p class="fig">0.86</p><p>cross-validated AUC</p></div>
+    </article>
+  </div>
+  <div class="page strand"><div class="main"><h3 class="group rise">Characters that behave believably</h3></div><div class="side"><p class="question rise" style="--i:1">Can a thousand NPCs hold opinions that shift with the world around them, and say things that match?</p></div></div>
+  <div class="entries">
+    <article class="entry rise">
+      <div class="main">
+        <h3>NPC Opinion Dynamics</h3>
+        <p class="kind">Agent-based model with a GraphRAG dialogue layer</p>
+        <p class="detail">An opinion model of 1,010 Skyrim NPCs (<a href="#civil-war">run it below</a>), run 101,000 times and validated against an energy-matched null with Kolmogorov–Smirnov tests. A GraphRAG dialogue layer on a local LLM keeps what each character says consistent with their stance 93% of the time.</p>
+      </div>
+      <div class="side"><p class="fig">93%</p><p>stance consistency in generated dialogue</p></div>
+    </article>
+  </div>
+  <div class="page strand"><div class="main"><h3 class="group rise">Other research</h3></div><div class="side"><p class="question rise" style="--i:1">Applied machine learning and LLM work outside games.</p></div></div>
+  <div class="entries">
+    <article class="entry rise">
+      <div class="main">
+        <h3>Grant Central Station</h3>
+        <p class="kind">Grant discovery and proposal app · first author, with Rachel Chung (Carnegie Mellon University) and Pooja Muthuraj (Harvard University)</p>
+        <p class="detail">It grew out of the grant-writing pipeline I built for The Pad Project in spring 2026. The app makes that pipeline customizable for any organization looking for funding.</p>
+      </div>
+      <div class="side"><p class="fig">Accepted</p><p>Pre-ICIS SIGDSA 2026, Prototype Track</p></div>
+    </article>
+    <article class="entry rise">
+      <div class="main">
+        <h3>BenchRec</h3>
+        <p class="kind">Versioned cash-reconciliation benchmark · first author</p>
+        <p class="detail">A benchmark for matching bank lines to ledger records, with held-out solutions and baselines, including a naive LLM matcher, so reconciliation methods can be compared on the same ground.</p>
+      </div>
+      <div class="side"><p class="fig">In progress</p><p>First-author paper, 2026</p></div>
+    </article>
+  </div>
+</section>
+
+<!--war-->
+<section class="field" id="civil-war" aria-labelledby="war-h">
+  <div class="page">
+    <div class="side">
+      <h2 id="war-h" class="rise">Run the Civil War</h2>
+      <p class="how rise" style="--i:1">The model from my paper, running live on all 1,010 named NPCs in Skyrim, with the same rules and parameters as the R code. Choose who wins the war, then watch 150 steps of conversation and four battles settle the population into camps.</p>
+      <fieldset class="seg rise" style="--i:2">
+        <legend>Who wins</legend>
+        <label><input type="radio" name="sc" value="Imperial" checked><span>Empire</span></label>
+        <label><input type="radio" name="sc" value="Stormcloak"><span>Stormcloaks</span></label>
+      </fieldset>
+      <fieldset class="seg rise" style="--i:2">
+        <legend>How opinions move</legend>
+        <label><input type="radio" name="model" value="structured" checked><span>Social rules</span></label>
+        <label><input type="radio" name="model" value="null"><span>Random drift</span></label>
+      </fieldset>
+      <div class="sim-btns rise" style="--i:3">
+        <button class="btn" type="button" id="war-run">Run the war</button>
+        <button class="btn ghost" type="button" id="war-reset">Reset</button>
+      </div>
+      <dl class="war-stats rise" style="--i:3" aria-live="polite">
+        <div><dt>Step</dt><dd id="war-t">0 of 150</dd></div>
+        <div><dt>Mean lean</dt><dd id="war-mean">0.50</dd></div>
+        <div><dt>Undecided</dt><dd id="war-neu">0%</dd></div>
+      </dl>
+      <p class="war-event" id="war-event">Before the first battle</p>
+    </div>
+    <div class="main rise" style="--i:1">
+      <canvas id="war-map" width="1000" height="700" aria-label="Map of Skyrim's holds with one dot per NPC, coloured from Imperial red to Stormcloak blue by their current opinion."></canvas>
+      <p class="war-who" id="war-who">Point at any dot to see who it is.</p>
+      <canvas id="war-hist" width="1000" height="220" aria-label="Histogram of all 1,010 opinions from Imperial at the left to Stormcloak at the right."></canvas>
+      <div class="war-axis"><span>Imperial</span><span>Undecided</span><span>Stormcloak</span></div>
+      <p class="note">“Random drift” is the paper’s energy-matched null: the same battles and the same amount of change each step, with the social rules replaced by noise. With the rules, the population splits into two camps and almost nobody stays undecided; without them, about one in five does.</p>
+      <noscript><p class="note">This demo needs JavaScript.</p></noscript>
+    </div>
+  </div>
+</section>
+<!--/war-->
+
+<section class="sec page" id="work" aria-labelledby="work-h">
+  <div class="side">
+    <div class="side-sticky">
+      <figure class="figure rise">
+        <p class="big">80.5% → 91.08%</p>
+        <div class="meter" role="img" aria-label="Automated match rate rose from 80.5% to 91.08%">
+          <div><span>Before</span><span class="fill" style="--w:80.5%"></span></div>
+          <div><span>After</span><span class="fill" style="--w:91.08%"></span></div>
+        </div>
+        <figcaption>Automated match rate on 32,048 bank lines for Operartis, at 98.20% precision.</figcaption>
+      </figure>
+
+    </div>
+  </div>
+  <div class="main">
+    <h2 id="work-h" class="rise">Work</h2>
+    <h3 class="group rise">Experience</h3>
+    <div class="bars rise" style="--i:1">
+      <details>
+        <summary><span class="t"><b>Research Intern, Beth Israel Deaconess Medical Center</b><span class="res">Research with Dr. Walid Yassine</span></span> <span class="when">2026–</span><span class="plus" aria-hidden="true">+</span></summary>
+        <div class="panel">
+          <p class="sub">From November 2026 · Boston, Massachusetts</p>
+          <ul>
+            <li><span>Research with Dr. Walid Yassine at BIDMC</span><b>Nov 2026</b></li>
+          </ul>
+        </div>
+      </details>
+      <details open>
+        <summary><span class="t"><b>AI Fellow, Mason School of Business</b><span class="res">Led AI Day’s demo team; advised 10+ professors on generative AI</span></span> <span class="when">2025–26</span><span class="plus" aria-hidden="true">+</span></summary>
+        <div class="panel">
+          <p class="sub">November 2025 to May 2026 · Williamsburg, Virginia</p>
+          <ul>
+            <li><span>Led the Technical Demos and Experience Design team for the university-wide AI Day on April 1, running five live generative AI demos</span><b>5 demos</b></li>
+            <li><span>Demoed my own agentic AI system that writes literature reviews with accurate citations and no hallucinated sources: <a href="https://litrevsynth.streamlit.app/" rel="noopener">LitRevSynth</a></span><b>AI Day</b></li>
+            <li><span>Represented William &amp; Mary at the Elon University AI Summit, alongside leaders from Microsoft, OpenAI, Bank of America and Gartner, where the W&amp;M group won top honors</span><b>May 2026</b></li>
+            <li><span>Gave a Future of AI keynote and LangChain workshops; one of eight students chosen to advise professors on generative AI in their syllabi</span><b>10+ profs</b></li>
+          </ul>
+        </div>
+      </details>
+      <details>
+        <summary><span class="t"><b>Graduate Assistant, Mason School of Business</b><span class="res">Process mining on 400,000+ juvenile justice cases</span></span> <span class="when">2025</span><span class="plus" aria-hidden="true">+</span></summary>
+        <div class="panel">
+          <p class="sub">September to December 2025 · with Dr. Monica Chiarini Tremblay</p>
+          <ul>
+            <li><span>Used process mining and simulation to analyze and improve juvenile justice systems</span><b>Research</b></li>
+            <li><span>Documented a 5.38 GB Celonis process-mining artifact and isolated its bottlenecks, including low statutory detention compliance</span><b>400k cases</b></li>
+            <li><span>Checked the semantic alignment of sources for research on machine learning transparency</span><b>250+ sources</b></li>
+          </ul>
+        </div>
+      </details>
+      <details>
+        <summary><span class="t"><b>Film Data Analyst, Trupti Bhoir Films</b><span class="res">100+ film festivals analyzed for submission strategy</span></span> <span class="when">2024–25</span><span class="plus" aria-hidden="true">+</span></summary>
+        <div class="panel">
+          <p class="sub">May 2024 to March 2025 · Mumbai</p>
+          <ul>
+            <li><span>Analyzed 100+ film festivals and built a framework for acceptance rates, audience demographics and award odds</span><b>100+ festivals</b></li>
+            <li><span>Set submission strategy from historical trends by genre, budget and region, and built dashboards tracking submissions and festival performance</span><b>Dashboards</b></li>
+            <li><span>Designed websites for the producer and the film, and managed the IMDb presence of <i>Paro: The Untold Story of Bride Slavery</i></span><b>2 sites</b></li>
+          </ul>
+        </div>
+      </details>
+      <details>
+        <summary><span class="t"><b>Earlier</b><span class="res">Tech meetup, nonprofit and startup roles</span></span> <span class="when">2022–26</span><span class="plus" aria-hidden="true">+</span></summary>
+        <div class="panel">
+          <ul>
+            <li><span>Member of the Education Sub-Committee, Hampton Roads Tech Meetup, Williamsburg, Virginia</span><b>2025–26</b></li>
+            <li><span>Volunteer, Shelter Foundation Trust: coordinated workshops and training sessions, promoted work by tribal artisans, and helped run the website</span><b>2023</b></li>
+            <li><span>Intern, BlackBT: business model canvas, pitch deck, landing and product page content, and support on a design patent</span><b>2022</b></li>
+          </ul>
+        </div>
+      </details>
+    </div>
+    <h3 class="group rise">Projects</h3>
+    <div class="bars rise" style="--i:1">
+      <details>
+        <summary><span class="t"><b>Operartis cash reconciliation</b><span class="res">Match rate 80.5% → 91.08% at 98.20% precision</span></span> <span class="when">2026</span><span class="plus" aria-hidden="true">+</span></summary>
+        <div class="panel">
+          <p class="sub">MSBA capstone with an industry sponsor, supervised by Dr. Rachel Chung and Dr. Tracey Lall · January to May 2026</p>
+          <ul>
+            <li><span>Lifted the automated match rate from 80.5% to 91.08% across 32,048 bank lines, at 98.20% precision</span><b>+10.6 pts</b></li>
+            <li><span>Entity resolution with six models in one consensus vote: rules, graph linkage, GNNs, parsers, gradient boosting and Splink, with an agentic LLM reviewing what is left</span><b>6 models</b></li>
+          </ul>
+        </div>
+      </details>
+      <details>
+        <summary><span class="t"><b>Healthcare churn, Lackey Clinic</b><span class="res">81% sensitivity across 4,000+ free-clinic patients</span></span> <span class="when">2025</span><span class="plus" aria-hidden="true">+</span></summary>
+        <div class="panel">
+          <ul>
+            <li><span>A discriminant-analysis churn model for more than 4,000 free-clinic patients, turned into a telehealth outreach plan for those most at risk</span><b>81% sens.</b></li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="tone" id="about" aria-labelledby="about-h">
+  <div class="page about">
+    <div class="main">
+      <h2 id="about-h" class="rise">About</h2>
+      <p class="statement rise" style="--i:1">I came to analytics from business management, and I still judge a model by whether someone can act on it on Monday morning. At William &amp; Mary I finished the MSBA <span class="mark">first in a class of 60</span>, then spent the spring as an AI Fellow, building live demos and teaching faculty what these tools can and cannot do.</p>
+      <p class="statement rise" style="--i:2">My research asks why players do what they do and how characters could do the same. I study it through thousands of players’ own words and a thousand villagers in Skyrim, because games are the best laboratory I know for how people make up their minds.</p>
+      <div class="about-lists">
+        <div class="rise" style="--i:3">
+          <h3>Education</h3>
+          <ul>
+            <li><b>MS Business Analytics, William &amp; Mary</b><span>Graduated May 16, 2026. GPA 4.00, first of 60. Full-tuition merit scholarship; Beta Gamma Sigma</span></li>
+            <li><b>BCom Business Management, University of Mumbai</b><span>July 2023. CGPI 8.86</span></li>
+            <li><b>Diploma in Business Management and Entrepreneurship, ISME</b><span>Three years, with courses in game theory and business analytics. CGPA 9.19</span></li>
+          </ul>
+        </div>
+        <div class="rise" style="--i:4">
+          <h3>Tools</h3>
+          <ul>
+            <li><b>Languages and platforms</b><span>Python, R, SQL, Git, Tableau, Power BI, Alteryx, Gurobi, Spark</span></li>
+            <li><b>Machine learning</b><span>Supervised and unsupervised learning, deep learning, NLP, LLM applications and agents</span></li>
+            <li><b>Modeling</b><span>Simulation, agent-based models, optimization, forecasting, statistical analysis</span></li>
+            <li><b>Data engineering</b><span>ETL pipelines, Hadoop, Spark, process mining, data modeling</span></li>
+          </ul>
+        </div>
       </div>
     </div>
-
-    <div class="filters" id="filters">
-      <div class="chip active" data-f="all">All</div>
-      <div class="chip" data-f="abm">Agent-Based Modeling</div>
-      <div class="chip" data-f="opt">Optimization</div>
-      <div class="chip" data-f="ml">ML &amp; Analytics</div>
-    </div>
-
-    <div class="grid" id="grid">
-
-      <!-- 1: Skyrim ABM -->
-      <article class="card" data-cat="abm">
-        <div class="thumb" data-full="assets/img_abm_validation.png">
-          <img src="assets/img_abm_validation.png" alt="Structured model produces echo chambers; the energy-matched null does not">
-          <span class="zoom">click to enlarge</span>
-        </div>
-        <div class="card-body">
-          <div class="cat">Agent-Based Modeling</div>
-          <h3>Generative Opinion Dynamics in Skyrim</h3>
-          <div class="role">Emergent political belief &amp; generative NPC dialogue</div>
-          <div class="desc">A stochastic agent-based model that evolves the political opinions of 1,010 named <em>Skyrim</em> NPCs through the Civil War: bounded-confidence influence, out-group repulsion, zealot anchoring, and a hold-clustered social network. To prove the social machinery (not the events) drives the outcome, it is tested against an <em>energy-matched</em> null with identical shocks: the structured model produces sharp echo chambers the null cannot. A second layer turns that structure into speech: each NPC's emergent opinion, plus a per-NPC lore knowledge base scraped from the wiki, conditions a local language model (<em>llama3.2:3b</em>) that voices the character in-context. An independent LLM judge then scored the generated dialogue at 85% stance-consistent and 97.5% shippable across a random sample, with zero stance flips.</div>
-          <div class="metric help" title="Separation: how far the two campaigns' average opinions end up apart (0.41 with the social model vs 0.24 without). Neutral-zone: share of NPCs left undecided (under 1% vs 21%). KS D: how different the two outcome distributions are, on a 0-to-1 scale, where 0.37 counts as large.">Beats an energy-matched null: separation 0.41 vs 0.24 · neutral-zone &lt;1% vs 21% · KS D = 0.37 · 1,010 NPCs</div>
-          <div class="plain">Note: I re-ran the model with the social rules replaced by random motion of the <b>same size</b>. The realism disappeared: NPCs no longer took clear sides and the two campaigns barely diverged. So the believable structure is produced by the model, not by chance or the battles.</div>
-          <div class="tags">
-            <span class="tag">R</span><span class="tag">Agent-Based Modeling</span><span class="tag">Opinion Dynamics</span><span class="tag">SLM · Ollama</span><span class="tag">LLM-as-judge</span><span class="tag">Monte Carlo</span>
-          </div>
-          <div class="links">
-            <a class="lnk solid" href="assets/skyrim_npc_dialogue.html" target="_blank" rel="noopener">Live NPC dialogue <span class="arr">↗</span></a>
-          </div>
-        </div>
-      </article>
-
-      <!-- 2: Valorant -->
-      <article class="card" data-cat="opt">
-        <div class="thumb" data-full="assets/img_valorant_result.png">
-          <img src="assets/img_valorant_result.png" alt="EV-aware solver beats naive on simulated win rate">
-          <span class="zoom">click to enlarge</span>
-        </div>
-        <div class="card-body">
-          <div class="cat">Optimization · Live demo</div>
-          <h3>Stochastic Valorant Shotcaller</h3>
-          <div class="role">MILP + ML + MDP team-economy optimizer</div>
-          <div class="desc">A data-driven economy optimizer for <em>Valorant</em>: a Mixed-Integer Linear Program (SciPy HiGHS) assigns team-wide loadouts, an XGBoost model trained on 2.9M round samples predicts round-win probability, and a Markov Decision Process solved by backward induction factors long-term economy value. An LLM layer adds context-aware tactical constraints. In a paired simulation the EV-aware solver beats a naive save/buy rule by a clear, statistically significant margin. Deployed as a live interactive app.</div>
-          <div class="metric">XGBoost round-win model (AUC 0.71) · EV-aware solver +0.87 rounds/match vs naive (+7.2%, 95% CI 0.79 to 0.95, p &lt; 1e-89) · live app</div>
-          <div class="plain">Note: a model learns each round's win odds, and the optimizer buys to maximize them while protecting the future bank. Across 1,000 simulated matches it wins almost one extra round per match versus a simple "save or full-buy" rule. The comparison is paired (same matches for both), so the edge is reliable, not luck.</div>
-          <div class="tags">
-            <span class="tag">Python</span><span class="tag">MILP · HiGHS</span><span class="tag">XGBoost</span><span class="tag">MDP</span><span class="tag">Streamlit</span><span class="tag">LLM</span>
-          </div>
-          <div class="links">
-            <a class="lnk solid" href="https://huggingface.co/spaces/mannpawar/ValorantTeamEconomyOptimizer" target="_blank" rel="noopener">Launch live demo <span class="arr">↗</span></a>
-          </div>
-        </div>
-      </article>
-
-      <!-- 3: Skyrim Class Optimization -->
-      <article class="card" data-cat="opt">
-        <div class="thumb" data-full="assets/img_class_result.png">
-          <img src="assets/img_class_result.png" alt="Utility model vs observed class distribution">
-          <span class="zoom">click to enlarge</span>
-        </div>
-        <div class="card-body">
-          <div class="cat">Optimization</div>
-          <h3>Skyrim Class Optimization</h3>
-          <div class="role">A mechanistic model of <em>why</em> players pick the classes they do</div>
-          <div class="desc">A first-principles model of <em>Skyrim</em> class choice built to <em>explain</em> behavior, not just forecast it. It weighs three forces on the probability simplex, combat efficiency, expressive build-complexity, and diversity-seeking, solved with LP/MILP (SciPy HiGHS, Gurobi). The finding: no single force works. Pure efficiency-maximizing collapses to 100% Stealth, which players never do; all three together cut error 48% below uniform. Because it is mechanistic, it can run counterfactuals a statistical prior cannot, such as "rebalance a class and predict how the population shifts."</div>
-          <div class="metric help" title="On raw held-out MAE the model (0.086) is beaten by trivial priors (down to 0.0001). But that is largely an artifact of a stratified split that preserves class shares by construction, and those priors cannot run counterfactuals. The model's value is mechanistic explanation, not short-horizon prediction.">48% lower error than uniform · isolates the 3 forces behind class choice · a mechanistic / counterfactual tool</div>
-          <div class="plain">Note: this explains <b>why</b> players choose as they do. Pure power-gaming would make everyone a Stealth assassin, but players don't, they also value variety and complex, expressive builds. Modeling all three forces together explains the real mix far better than any one alone, and unlike a model that just memorizes today's numbers, it can answer "what if we rebalanced a class?"</div>
-          <div class="tags">
-            <span class="tag">Python</span><span class="tag">LP / MILP</span><span class="tag">Gurobi</span><span class="tag">Entropy Objective</span><span class="tag">Reproducible</span>
-          </div>
-          <div class="links">
-            <a class="lnk solid" href="assets/img_skyrimclass_heldout.png" target="_blank" rel="noopener">Held-out fit <span class="arr">↗</span></a>
-          </div>
-        </div>
-      </article>
-
-      <!-- 4: Looter-shooter churn -->
-      <article class="card" data-cat="ml">
-        <div class="thumb" data-full="assets/img_churn_result.png">
-          <img src="assets/img_churn_result.png" alt="Sentiment vs veteran churn point across live-service titles">
-          <span class="zoom">click to enlarge</span>
-        </div>
-        <div class="card-body">
-          <div class="cat">ML &amp; Analytics</div>
-          <h3>The Silent Killers of Player Retention</h3>
-          <div class="role">Exploratory churn analysis across live-service titles</div>
-          <div class="desc">A data pipeline over Steam's top titles: review text anchored to playtime telemetry to estimate a playtime-weighted "churn point" (when veterans drop off), with a local DeepSeek-R1 model surfacing the recurring themes behind it. Directional finding: design and progression issues, not monetization, dominate the qualitative complaints of long-time players. The themes are LLM-labeled and the metric is a proxy, so this is framed as exploratory market intelligence rather than a validated causal claim.</div>
-          <div class="metric">47 titles · playtime-weighted churn proxy · LLM-surfaced themes (exploratory)</div>
-          <div class="plain">Note: across 47 live-service games I estimated how many hours in players tend to drop off (weighting reviews by playtime), then had a local AI read the reviews and group the reasons. It points to design and progression problems over monetization, but it is an exploratory read of player opinions, not a measured cause.</div>
-          <div class="tags">
-            <span class="tag">Python</span><span class="tag">Steam API</span><span class="tag">DeepSeek-R1</span><span class="tag">NLP</span><span class="tag">Data Viz</span>
-          </div>
-          <div class="links">
-            <a class="lnk solid" href="assets/looter_shooter_intelligence.pdf" target="_blank" rel="noopener">Read the brief (PDF) <span class="arr">↗</span></a>
-          </div>
-        </div>
-      </article>
-
+    <div class="side">
+      <ul class="facts">
+        <li class="rise"><b>BIDMC</b><span>Research Intern with Dr. Walid Yassine, from November 2026</span></li>
+        <li class="rise" style="--i:1"><b>Pre-ICIS 2026</b><span>First-author paper accepted</span></li>
+        <li class="rise" style="--i:2"><b><a href="mailto:mannspawar1@gmail.com">mannspawar1<wbr>@gmail.com</a></b><span>Best way to reach me</span></li>
+      </ul>
     </div>
   </div>
 </section>
 
-<section class="sec" id="about">
-  <div class="wrap">
-    <div class="sec-h"><div><h2>About</h2></div></div>
-    <div class="about">
-      <p>I completed my <strong>MS in Business Analytics at William &amp; Mary</strong> in May 2026, where I focused on turning messy behavioral data into models that can explain, simulate, and optimize complex systems. My independent work applies that toolkit to games: <strong>agent-based simulation, mathematical optimization, and machine learning</strong> for worlds where characters, players, and systems adapt to one another.</p>
-      <p>I am most interested in game AI that produces behavior rather than scripts it. The projects here model how NPC populations form beliefs, how teams make strategic decisions under uncertainty, and how player behavior changes over time, with each result checked against clear baselines and packaged so the work can be reproduced.</p>
-      <p>I am now applying to <strong>PhD programs in game AI</strong>, with a focus on <strong>believable agents</strong>, emergent social systems, and generative tools for interactive worlds. All code and documentation for the projects above lives on my <a href="https://github.com/MannPawar" target="_blank" rel="noopener">GitHub</a>.</p>
+<section class="page contact" id="contact" aria-labelledby="contact-h">
+  <div class="side"><p class="rise">Hiring? Let’s talk.</p></div>
+  <div class="main">
+    <figure class="pic rise" style="--i:1"><img src="assets/portrait.jpg" width="400" height="400" alt="Mann Pawar, smiling, in a dark suit and burgundy shirt in front of a window" loading="lazy"></figure>
+    <div class="rise" style="--i:2">
+    <h2 id="contact-h">Contact</h2>
+    <ul>
+      <li><a href="mailto:mannspawar1@gmail.com">mannspawar1<wbr>@gmail.com</a></li>
+      <li><a href="https://www.linkedin.com/in/mann-pawar/" rel="noopener">LinkedIn</a></li>
+      <li><a href="https://github.com/MannPawar" rel="noopener">GitHub</a></li>
+    </ul>
+    <p class="city">Open to research collaborations and to writing papers together.</p>
     </div>
   </div>
 </section>
 
-<div class="wrap">
-  <footer>
-    <div>© <span id="yr"></span> Mann Pawar · Built for sharing research, not selling it.</div>
-    <div>
-      <a href="mailto:mannspawar1@gmail.com">mannspawar1@gmail.com</a> ·
-      <a href="https://github.com/MannPawar" target="_blank" rel="noopener">github.com/MannPawar</a> ·
-      <a href="https://huggingface.co/mannpawar" target="_blank" rel="noopener">huggingface.co/mannpawar</a>
-    </div>
-  </footer>
-</div>
-
-<div class="lb" id="lb"><img id="lb-img" src="" alt="enlarged figure"></div>
+<footer>
+  <div class="fcols">
+    <div><p>Mann Pawar</p><p>Data scientist<br>Research Intern, BIDMC</p></div>
+    <div><p>Sections</p><a href="#research">Research</a><br><a href="#civil-war">Civil War model</a><br><a href="#work">Work</a><br><a href="#about">About</a><br><a href="#contact">Contact</a></div>
+    <div><p>Elsewhere</p><a href="https://www.linkedin.com/in/mann-pawar/" rel="noopener">LinkedIn</a><br><a href="https://github.com/MannPawar" rel="noopener">GitHub</a><br><a href="mailto:mannspawar1@gmail.com">Email</a></div>
+    <div class="credit"><p>Pictures</p><a href="https://commons.wikimedia.org/wiki/File:Wren_Building_and_Lord_Botetourt_statue,_c._1905%E2%80%941926.jpg">Wren Building postcard</a>, Louis Kaufman &amp; Sons, public domain · <a href="https://www.pexels.com/photo/9054612/">Rajabai Clock Tower</a> by Deepak Bhandari, Pexels licence · <a href="https://commons.wikimedia.org/wiki/File:Crim_Dell_2.jpg">Crim Dell</a> by Jrcla2, public domain · <a href="https://www.metmuseum.org/art/collection/search/10813"><i>The Chess Players</i></a>, Thomas Eakins, 1876, The Met, CC0 · <a href="https://commons.wikimedia.org/wiki/File:Socialist_Frost_addressing_a_street_crowd,_Union_Sq.,_Oct._16-08_LCCN2014682321.jpg">Street crowd, Union Square, 1908</a>, Bain News Service, Library of Congress, public domain · all shown in greyscale</div>
+  </div>
+  <div>
+    <p class="legal">© 2026 Mann Pawar</p>
+  </div>
+</footer>
 
 <script>
-  document.body.classList.add('js');
-  document.getElementById('yr').textContent = new Date().getFullYear();
-
-  // nav border on scroll
-  const navEl = document.querySelector('nav');
-  addEventListener('scroll', () => navEl.classList.toggle('scrolled', scrollY > 8));
-
-  // scroll-reveal cards
-  const io = new IntersectionObserver((es) => {
-    es.forEach((e, i) => { if (e.isIntersecting){ setTimeout(()=>e.target.classList.add('in'), i*90); io.unobserve(e.target); } });
-  }, {threshold:.15});
-  document.querySelectorAll('.card').forEach(c => io.observe(c));
-
-  // project filtering
-  const chips = document.querySelectorAll('.chip'), cards = document.querySelectorAll('.card');
-  chips.forEach(chip => chip.addEventListener('click', () => {
-    chips.forEach(c => c.classList.remove('active')); chip.classList.add('active');
-    const f = chip.dataset.f;
-    cards.forEach(card => {
-      const show = f === 'all' || card.dataset.cat === f;
-      card.classList.toggle('hide', !show);
-      if (show){ card.classList.remove('in'); requestAnimationFrame(()=>requestAnimationFrame(()=>card.classList.add('in'))); }
-    });
-  }));
-
-  // lightbox
-  const lb = document.getElementById('lb'), lbImg = document.getElementById('lb-img');
-  document.querySelectorAll('.thumb[data-full]').forEach(t => t.addEventListener('click', () => {
-    lbImg.src = t.dataset.full; lb.classList.add('open');
-  }));
-  lb.addEventListener('click', () => lb.classList.remove('open'));
-  addEventListener('keydown', e => { if(e.key==='Escape') lb.classList.remove('open'); });
-
+(() => {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.add('loaded')));
 
-  // Sci-fi light field (Destiny-inspired, original code/no game assets):
-  // drifting golden light motes with bloom, slow orbiting geometric rings,
-  // a cursor light, and a "transmat" ring burst on click.
-  (function(){
-    if (reduce) return;
-    const cv = document.getElementById('fx'), cx = cv.getContext('2d');
-    let W, H, dpr = Math.min(devicePixelRatio || 1, 2);
-    const mouse = {x:-999, y:-999, on:false};
-    const bursts = [];
-    const trail = [];
-    function resize(){ W = innerWidth; H = innerHeight;
-      cv.width = W*dpr; cv.height = H*dpr; cx.setTransform(dpr,0,0,dpr,0,0); }
-    resize(); addEventListener('resize', resize);
-    addEventListener('pointermove', e => { mouse.x=e.clientX; mouse.y=e.clientY; mouse.on=true;
-      trail.push({x:e.clientX, y:e.clientY, a:1}); if(trail.length>26) trail.shift(); });
-    addEventListener('pointerleave', () => { mouse.on=false; });
-    addEventListener('pointerdown', e => { bursts.push({x:e.clientX, y:e.clientY, r:0, a:1}); });
+  /* entrances */
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), { rootMargin: '0px 0px 20% 0px' });
+  document.querySelectorAll('.rise, .meter').forEach(el => io.observe(el));
 
-    // pre-rendered glow sprites = cheap bloom
-    function glow(color, r){
-      const s=document.createElement('canvas'); s.width=s.height=r*2;
-      const g=s.getContext('2d'), grd=g.createRadialGradient(r,r,0,r,r,r);
-      grd.addColorStop(0,color); grd.addColorStop(.2,color); grd.addColorStop(1,'transparent');
-      g.fillStyle=grd; g.beginPath(); g.arc(r,r,r,0,7); g.fill(); return s;
-    }
-    const sprites=['rgba(255,205,120,1)','rgba(255,255,255,1)','rgba(120,200,255,1)','rgba(170,135,255,1)']
-                  .map(c=>glow(c,30));
-
-    const N = Math.min(130, Math.floor(W/11));
-    const motes=[];
-    for(let i=0;i<N;i++) motes.push({
-      x:Math.random()*W, y:Math.random()*H,
-      vx:(Math.random()-.5)*.14, vy:-(.08+Math.random()*.28),
-      r:1+Math.random()*2.6, s:sprites[(Math.random()*sprites.length)|0],
-      tw:Math.random()*6.28, tws:.012+Math.random()*.03
-    });
-
-    // slow-rotating wireframe shards (triangles + hexes)
-    const shardCols=['rgba(120,200,255,.18)','rgba(170,135,255,.16)','rgba(255,205,120,.15)'];
-    const shards=[];
-    for(let i=0;i<7;i++) shards.push({
-      x:Math.random()*W, y:Math.random()*H, r:14+Math.random()*26,
-      sides:(Math.random()<.5?3:6), rot:Math.random()*6.28, vr:(Math.random()-.5)*.004,
-      vx:(Math.random()-.5)*.10, vy:(Math.random()-.5)*.10, col:shardCols[i%3]
-    });
-    function drawShards(){
-      for(const s of shards){
-        s.x+=s.vx; s.y+=s.vy; s.rot+=s.vr;
-        if(s.x<-50)s.x=W+50; if(s.x>W+50)s.x=-50; if(s.y<-50)s.y=H+50; if(s.y>H+50)s.y=-50;
-        cx.strokeStyle=s.col; cx.lineWidth=1.2; cx.beginPath();
-        for(let k=0;k<=s.sides;k++){ const a=s.rot+k*(6.283/s.sides);
-          const px=s.x+Math.cos(a)*s.r, py=s.y+Math.sin(a)*s.r;
-          k===0 ? cx.moveTo(px,py) : cx.lineTo(px,py); }
-        cx.stroke();
-      }
-    }
-
-    let t=0;
-    function rings(){
-      const ox=W*0.80, oy=H*0.32;
-      const specs=[
-        {r:115,seg:5,sp:.10,w:1.6,c:'rgba(255,205,120,.30)'},
-        {r:165,seg:9,sp:-.07,w:1,c:'rgba(120,200,255,.20)'},
-        {r:225,seg:3,sp:.05,w:2,c:'rgba(170,135,255,.16)'}
-      ];
-      for(const s of specs){
-        const step=6.283/s.seg, base=t*s.sp*0.01;
-        for(let k=0;k<s.seg;k++){
-          const a0=base+k*step, a1=a0+step*0.55;
-          cx.strokeStyle=s.c; cx.lineWidth=s.w;
-          cx.beginPath(); cx.arc(ox,oy,s.r,a0,a1); cx.stroke();
-        }
-      }
-    }
-
-    function frame(){
-      t++;
-      cx.clearRect(0,0,W,H);
-      cx.globalCompositeOperation='lighter';
-      rings();
-      drawShards();
-      for(const m of motes){
-        m.x+=m.vx; m.y+=m.vy; m.tw+=m.tws;
-        if(mouse.on){ const dx=mouse.x-m.x, dy=mouse.y-m.y, d=Math.hypot(dx,dy);
-          if(d<210){ m.vx+=dx/d*0.004; m.vy+=dy/d*0.004; } }
-        m.vx*=0.994; if(m.vy<-0.7)m.vy=-0.7;
-        if(m.y<-25){ m.y=H+25; m.x=Math.random()*W; m.vy=-(.08+Math.random()*.28); }
-        if(m.x<-25)m.x=W+25; if(m.x>W+25)m.x=-25;
-        const sz=m.r*7, a=0.5+0.5*Math.sin(m.tw);
-        cx.globalAlpha=a*0.9; cx.drawImage(m.s, m.x-sz/2, m.y-sz/2, sz, sz);
-      }
-      if(mouse.on){ const sz=170; cx.globalAlpha=.22;
-        cx.drawImage(sprites[0], mouse.x-sz/2, mouse.y-sz/2, sz, sz); }
-      for(let i=0;i<trail.length;i++){ const p=trail[i]; p.a-=0.045; if(p.a<=0) continue;
-        const sz=9+i*0.7; cx.globalAlpha=p.a*0.5;
-        cx.drawImage(sprites[0], p.x-sz/2, p.y-sz/2, sz, sz); }
-      for(let i=bursts.length-1;i>=0;i--){ const b=bursts[i];
-        b.r+=6; b.a-=0.02;
-        if(b.a<=0){ bursts.splice(i,1); continue; }
-        cx.globalAlpha=b.a; cx.lineWidth=2; cx.strokeStyle='rgba(255,205,120,1)';
-        cx.beginPath(); cx.arc(b.x,b.y,b.r,0,7); cx.stroke();
-        cx.strokeStyle='rgba(120,200,255,.7)'; cx.beginPath(); cx.arc(b.x,b.y,b.r*0.6,0,7); cx.stroke();
-      }
-      cx.globalAlpha=1; cx.globalCompositeOperation='source-over';
-      requestAnimationFrame(frame);
-    }
-    frame();
-  })();
-
-  // interactive cards: rarity accent + spotlight + sheen + 3D tilt
-  const rarityCols = ['#ffcd78','#9b7cff','#78c8ff','#9b7cff'];
-  document.querySelectorAll('.card').forEach((card, idx) => {
-    const rar = document.createElement('div'); rar.className = 'rarity';
-    rar.style.setProperty('--rc', rarityCols[idx % rarityCols.length]);
-    const sheen = document.createElement('div'); sheen.className = 'sheen';
-    const glow  = document.createElement('div'); glow.className  = 'glow';
-    card.append(rar, sheen, glow);
-    if (reduce) return;
-    card.addEventListener('pointermove', e => {
-      const r = card.getBoundingClientRect();
-      const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
-      card.style.setProperty('--mx', (px*100) + '%');
-      card.style.setProperty('--my', (py*100) + '%');
-      card.classList.add('tilt');
-      card.style.transform =
-        'perspective(820px) rotateX(' + ((.5-py)*7) + 'deg) rotateY(' + ((px-.5)*7) + 'deg) translateY(-4px)';
-    });
-    card.addEventListener('pointerleave', () => { card.classList.remove('tilt'); card.style.transform = ''; });
-  });
-
-  // magnetic buttons: lean toward the cursor
-  if (!reduce) document.querySelectorAll('.btn, .nav-cta').forEach(b => {
-    b.addEventListener('pointermove', e => {
-      const r = b.getBoundingClientRect();
-      b.style.transform = 'translate(' + ((e.clientX-r.left-r.width/2)*0.22) + 'px,' +
-                          ((e.clientY-r.top-r.height/2)*0.28 - 2) + 'px)';
-    });
-    b.addEventListener('pointerleave', () => { b.style.transform = ''; });
-  });
-
-  // decode / scramble reveal on the hero highlight
-  (function(){
-    const el = document.querySelector('.hero h1 .grad');
-    if (!el || reduce) return;
-    const final = el.textContent, chars = 'ABCDEFGHJKLMNPQRZ0123456789#%&*<>/{}';
-    let f = 0;
-    const id = setInterval(() => {
-      f++;
-      el.textContent = final.split('').map((c, i) =>
-        (c === ' ' || c === ',') ? c : (i < f/2 ? final[i] : chars[(Math.random()*chars.length)|0])
-      ).join('');
-      if (f/2 >= final.length) { el.textContent = final; clearInterval(id); }
-    }, 38);
-  })();
+})();
 </script>
+<!--abm-->
+<script type="application/json" id="abm-roster">{"home":["Dawnstar","","Falkreath","Markarth","Morthal","Raven Rock","Raven Rock, Tel Mithryn","Riften","Solitude","Tel Mithryn","Whiterun","Windhelm","Solitude then Windhelm","Winterhold","Dragon Bridge","Helgen","Riverwood","Ivarstead","Riften (After his quest)","Karthwasten","Rorikstead","Shor's Stone","Skaal Village","Temple of Miraak, Skaal Village","Dushnikh Yal","Largashbur","Mor Khazgur","Narzulbur","Darkwater Crossing","any city captured by the Stormcloaks","Kynesgrove","Stonehills","Corinthe"],"race":["Nord","Breton","Imperial","Redguard","Elder","Dark Elf","High Elf","Argonian","Orc","Animals","Undead","Wood Elf","Khajiit","Radiant","Dremora","Snow Elf"],"cls":["Miner","Warrior","Assassin","Apothecary","Child","Blacksmith","Destruction Mage","Rogue","Ranger","Citizen","Soldier","Priest","Bard","Food Vendor","Vigilant","Farmer","Penitus Oculatus","Bandit Archer","Lumberjack","Monk","Pawnbroker","Fire/Frost/Shock Mage","Bandit","Orc Warrior","Witchblade","Thief","Nightblade","Indeterminate","Barbarian","Conjurer","(?)","Beggar","Scout","Vampire","Mystic","Sorcerer","Spellsword","Dremora Class","Fletcher","Imperial Soldier","Prisoner","Tailor","Enchanter","Guard","Spell Vendor","Blade","Frea Combat Style","Forsworn Shaman","Bandit Wizard","Radiant","Haknir Death-Brand","DLC2Ralis","Miraak","Vyrthur","Werewolf","Thalmor Wizard","Nord Hero","Thalmor Warrior","Forsworn","EbonyWarrior Class","Katria"],"agents":[["Beitild",0,0,0],["Brina Merilis",0,0,1],["Horik Halfhand",0,0,1],["Dawnstar Guard",1,0,1],["Babette",1,1,2],["Cicero",1,2,2],["Dark Brotherhood Initiate",1,0,2],["Nazir",1,3,2],["Fruki",0,0,0],["Irgnir",0,0,0],["Bodil",0,0,0],["Gjak",0,0,0],["Karl",0,0,0],["Leigelf",0,0,0],["Frida",0,4,3],["Alesan",0,3,4],["Harlaug",0,0,1],["Irine",0,5,0],["Rustleif",0,0,5],["Seren",0,3,5],["Silus Vesuius",0,2,6],["Captain Wayfinder",0,0,7],["Guthrum",0,0,8],["Ravam Verethi",0,5,7],["Bulfrek",0,0,9],["Frorkmar Banner-Torn",0,0,10],["Gregor",0,0,1],["Skald",0,4,1],["Jod",0,0,1],["Madena",0,1,6],["Abelone",0,0,9],["Alding",0,0,1],["Erandur",0,5,11],["Gjuk",0,0,1],["Irlof",0,0,1],["Karita",0,0,12],["Stig Salt-Plank",0,0,1],["Thoring",0,0,13],["Vereth",0,6,0],["Borgny",0,0,0],["Edith",0,0,0],["Fenrik",0,0,14],["Harald",0,0,0],["Lond",0,0,0],["Indara Caerellia",2,2,1],["Mathies",2,0,15],["Arcturus",1,2,16],["Arnbjorn",1,0,2],["Astrid",1,0,2],["Festus Krex",1,4,6],["Gabriella",1,5,2],["Veezara",1,7,2],["Delacourt",2,1,7],["Narri",2,0,9],["Valdr",2,0,17],["Valga Vinicia",2,2,13],["Dengeir of Stuhn",2,0,1],["Tekla",2,0,9],["Thadgeir",2,0,1],["Falkreath Guard",1,0,1],["Sinding",1,0,1],["Zaria",2,3,1],["Bolund",2,0,1],["Solaf",2,0,18],["Kust",2,0,19],["Runil",2,6,11],["Helvard",2,0,1],["Siddgeir",2,0,20],["Legate Skulnar",2,0,10],["Nenya",2,6,21],["Rayya",2,3,1],["Lod",2,0,5],["Imedhnain",3,1,13],["Lisbet",3,0,13],["Captain Aquilius",3,3,22],["Borkul the Beast",3,8,23],["Braig",3,1,24],["Duach",3,1,24],["Grisvar the Unlucky",3,0,25],["Madanach",3,1,24],["Odvan",3,1,24],["Uraccen",3,1,24],["Adara",3,3,4],["Endon",3,3,9],["Kerah",3,3,20],["Markarth City Guard",1,0,10],["Bothela",3,1,3],["Muiri",3,1,3],["Brother Verulus",3,2,11],["Eola",1,1,26],["Daighre",1,1,0],["Erith",1,1,4],["Torom",1,9,27],["Adeber",1,1,0],["Ennoc",1,1,0],["Willem",1,1,0],["Gat gro-Shargakh",1,8,0],["Pavo Attius",1,2,0],["Skaggi Scar-Face",1,0,0],["Sosia Tremellia",1,2,0],["Kaie",1,1,26],["Banning",3,1,8],["Cedran",3,1,12],["Kibell",3,0,1],["Vigilance",3,9,27],["Morven",3,1,24],["Nepos the Nose",3,4,26],["Tynan",3,1,24],["Uaile",3,1,24],["Ogmund",3,0,12],["Weylin",3,1,24],["Rogatus Salvius",3,4,15],["Vigdis Salvius",3,4,15],["Frabbi",3,0,13],["Hogni Red-Arm",3,0,13],["Hreinn",3,0,9],["Hroki",3,0,4],["Kleppr",3,0,13],["Margret",1,0,9],["Vigilant Tyranus",3,2,24],["Vorstag",3,0,1],["Mulush gro-Shugurz",3,8,1],["Urzoga gra-Shugurz",3,8,23],["Anwen",3,3,11],["Fjotra",1,0,4],["Hamal",3,0,11],["Orla",3,0,11],["Senna",3,1,11],["Betrid Silver-Blood",3,0,9],["Donnel",3,4,24],["Nana Ildene",3,1,24],["Reburrus Quintilius",3,2,9],["Rhiada",3,1,9],["Thonar Silver-Blood",3,0,1],["Thongvor Silver-Blood",3,0,1],["Yngvar the Singer",3,0,28],["Aicantar",3,6,29],["Anton Virane",3,1,9],["Calcelmo",3,6,29],["Faleen",3,3,1],["Ghorza gra-Bagol",3,8,5],["Igmund",3,0,28],["Legate Emmanuel Admand",3,1,10],["Moth gro-Bagol",3,8,5],["Ondolemar",1,6,6],["Raerek",3,4,9],["Rondach",3,1,9],["Tacitus Sallustius",3,2,5],["Thalmor",1,6,30],["Voada",3,1,9],["Argis the Bulwark",3,0,1],["Cairine",3,1,9],["Cosnach",3,1,1],["Degaine",3,1,31],["Dryston",3,1,28],["Eltrys",3,1,9],["Garvey",3,1,32],["Hathrasil",3,1,9],["Omluag",3,1,9],["Alva",4,0,33],["Hroggar",4,0,18],["Agni",4,0,4],["Falion",4,3,29],["Benor",4,0,1],["Morthal Guard",4,0,1],["Aslfur",4,0,8],["Gorm",4,0,1],["Idgrod Ravencrone",4,4,34],["Idgrod the Younger",4,0,35],["Joric",4,0,4],["Legate Taurinus Duilis",4,2,10],["Valdimar",4,0,35],["Jorgen",4,0,18],["Lami",4,0,3],["Jonna",4,3,5],["Lurbuk",4,8,12],["Thonnir",4,0,18],["Virkmund",4,0,4],["Bralsa Drel",5,5,0],["Rirns Llervu",5,5,31],["Dreyla Alor",5,5,15],["Fethis Alor",5,5,15],["Captain Veleth",5,5,1],["Redoran Guard",5,5,10],["Aphia Velothi",5,5,11],["Crescius Caerellius",5,4,0],["Glover Mallory",5,1,25],["Garyn Ienth",5,5,15],["Milore Ienth",5,5,3],["Adril Arano",5,5,1],["Cindiri Arano",5,5,15],["Lleril Morvayn",5,5,1],["Evul Seloth",5,5,0],["Gratian Caerellius",5,10,27],["Meden Maren",5,5,0],["Millius",5,10,27],["Naris Mavani",5,5,0],["Tolenos Omoren",5,5,0],["Drovas Relvi",6,5,15],["Geldis Sadri",5,5,20],["Mogrul",5,8,1],["Slitter",1,5,22],["Teldryn Sero",5,5,36],["Mirri Severin",5,5,22],["Tilisu Severin",5,5,22],["Vendil Severin",5,5,37],["Elder Othreloth",5,5,29],["Galdrus Hlervu",5,5,6],["Aerin",7,2,1],["Mjoll the Lioness",7,0,1],["Keerava",7,7,13],["Louis Letrush",7,1,12],["Marcurio",7,2,6],["Talen-Jei",7,7,13],["Edda",7,2,31],["Madesi",7,7,20],["Snilf",7,0,31],["Hemming Black-Briar",7,0,1],["Ingun Black-Briar",7,0,2],["Maul",7,0,25],["Maven Black-Briar",7,0,26],["Indaryn",7,5,1],["Bolli",7,0,9],["Nivenor",7,11,9],["Elgrim",7,4,3],["Hafjorg",7,4,3],["Brand-Shei",7,5,20],["From-Deepest-Fathoms",7,7,9],["Grelka",7,0,5],["Haelga",7,0,9],["Niluva Hlaalu",7,5,9],["Svana Far-Shield",7,0,13],["Tythis Ulen",7,5,9],["Ungrien",7,11,13],["Wujeeta",7,7,9],["Alessandra",7,2,11],["Iona",7,0,1],["Constance Michel",7,2,9],["Francois Beaufort",7,2,4],["Grelod the Kind",7,4,18],["Hroar",7,0,4],["Runa Fair-Shield",7,0,4],["Samuel",7,2,4],["Marise Aravel",7,5,13],["Dravin Llanith",7,5,15],["Synda Llanith",1,5,15],["Anuriel",7,11,19],["Harrald",7,0,1],["Laila Law-Giver",7,0,9],["Saerlund",7,0,9],["Unmid Snow-Shod",7,0,1],["Wylandriah",7,11,21],["Shavari",7,12,21],["Bersi Honey-Hand",7,0,25],["Drifa",7,0,20],["Brynjolf",7,0,25],["Delvin Mallory",7,1,25],["Dirge",7,2,13],["Galathil",7,11,13],["Sapphire",7,0,25],["Tonilia",7,3,20],["Vekel the Man",7,0,13],["Vex",7,2,25],["Drahff",7,0,17],["Esbern",1,4,29],["Gian the Fist",7,2,25],["Hefid the Deaf",7,0,31],["Hewnon Black-Skeever",7,0,1],["Knjakr",7,4,28],["Salvianus",7,2,28],["Snippy",1,9,27],["Swims-In-Deep-Water",7,7,9],["Viriya",7,3,9],["Molgrom Twice-Killed",7,0,25],["Sibbi Black-Briar",7,0,25],["Threki the Innocent",1,0,25],["Hofgrir Horse-Crusher",7,0,1],["Shadr",7,3,15],["Sigaar",7,0,1],["Orini Dral",7,5,22],["Sarthis Idren",7,5,22],["Romlyn Dreth",7,5,25],["Asbjorn Fire-Tamer",7,0,5],["Balimund",7,0,5],["Addvild",1,0,15],["Leonara Arius",1,2,15],["Asgeir Snow-Shod",7,0,1],["Nura Snow-Shod",7,0,11],["Vulwulf Snow-Shod",7,0,1],["Briehl",7,0,1],["Dinya Balu",7,5,11],["Maramal",7,3,11],["Arnskar Ember-Master",7,0,5],["Cynric Endell",7,1,25],["Etienne Rarnis",7,1,7],["Garthar",7,0,25],["Herluin Lothaire",7,1,3],["Mercer Frey",7,1,7],["Niruin",7,11,25],["Ravyn Imyan",7,5,25],["Rune",1,2,25],["Syndus",7,11,38],["Thrynn",7,0,25],["Vanryth Gatharian",7,5,5],["Vipir the Fleet",7,0,25],["Valindor",7,11,1],["Addvar",8,0,13],["Greta",8,0,9],["Svari",8,0,4],["Angeline Morrard",8,1,3],["Vivienne Onis",8,1,3],["Aia Arria",8,2,12],["Ataf",8,3,12],["Bendt",8,4,9],["Giraud Gemane",8,1,25],["Illdi",8,0,12],["Inge Six Fingers",8,4,12],["Jorn",8,0,12],["Pantea Ateia",8,2,12],["Viarmo",8,6,12],["Kayd",8,3,4],["Sayma",8,3,20],["Bolgeir Bearclaw",8,0,1],["Elisif the Fair",8,0,9],["Erdi",8,0,9],["Falk Firebeard",8,0,1],["Odar",8,0,9],["Sybille Stentor",8,1,6],["Una",8,0,9],["Bryling",8,0,1],["Irnskar Ironhand",8,0,1],["Captain Aldis",8,0,39],["Emperor Titus Mede II",8,2,2],["General Tullius",8,2,39],["Gianna",8,2,18],["Legate Adventus Caesennius",8,2,10],["Legate Rikke",8,0,39],["Solitude Guard",8,0,1],["Bjartur",8,0,40],["East Empire Dockmaster",8,2,9],["East Empire Dockworker",1,1,1],["East Empire Warden",8,13,22],["Snorreid",8,0,1],["Erikur",8,0,1],["Gisli",8,0,8],["Melaran",8,6,21],["Evette San",8,0,13],["Octieve San",8,1,9],["Fihada",8,3,38],["Jawanan",8,3,38],["Styrr",8,4,11],["Ahtar",8,3,1],["Jala",8,0,13],["Blaise",8,1,4],["Katla",8,0,15],["Knud",8,0,4],["Snilling",8,0,15],["Deeja",8,7,2],["Dervenin",1,11,31],["Jaree-Ra",1,7,7],["Jolf",1,0,1],["Noster Eagle-Eye",8,2,31],["Roggvir",8,0,1],["Jordis the Sword-Maiden",8,0,1],["Endarie",8,6,41],["Taarie",8,6,41],["Dorian",8,1,25],["Eris",8,0,24],["Sabine Nytte",8,1,1],["Safia",8,2,26],["Xander",8,2,26],["Beirand",8,0,5],["Heimvar",8,0,5],["Hjorunn",8,0,18],["Kharag gro-Shurkul",8,8,18],["Thoron",1,1,29],["Fridrika",8,0,9],["Geimund",8,0,9],["Horm",8,0,9],["Thaer",8,0,1],["Freir",8,0,11],["Rorlund",8,0,11],["Silana Petreia",8,2,11],["Belrand",8,0,36],["Corpulus Vinius",8,2,13],["Gulum-Ei",8,7,26],["Lisette",8,1,12],["Minette Vinius",8,0,4],["Sorex Vinius",8,2,13],["Alexia Vici",1,2,9],["Aquillius Aeresius",8,2,9],["Vittoria Vici",8,2,9],["Neloth",9,5,42],["Talvas Fathryon",9,5,29],["Elynea Mothren",9,5,3],["Ulves Romoran",9,5,15],["Varona Nelas",9,5,15],["Amren",10,3,1],["Braith",10,3,4],["Saffir",10,3,20],["Arcadia",10,2,3],["Hulda",10,0,20],["Mikael",10,0,9],["Saadia",10,3,13],["Sinmir",10,0,39],["Gwendolyn",10,0,15],["Brenuin",10,3,31],["Lucia",10,2,4],["Belethor",10,1,20],["Sigurd",10,0,13],["Lydia",10,0,1],["Carlotta Valentia",10,2,13],["Mila Valentia",10,2,4],["Wilmuth",10,0,21],["Balgruuf the Greater",10,0,1],["Dagny",10,0,4],["Farengar Secret-Fire",10,0,21],["Fianna",10,1,13],["Frothar",10,0,4],["Gerda",10,0,13],["Hjornskar Head-Smasher",10,0,10],["Hrongar",10,0,1],["Irileth",10,5,26],["Legate Quentin Cipius",10,2,10],["Nelkir",10,0,4],["Proventus Avenicci",10,2,9],["Ahlam",10,3,11],["Anoriath",10,11,32],["Elrindir",10,11,38],["Jenassa",10,5,8],["Nazeem",10,3,9],["Commander Caius",10,2,39],["Whiterun Guard",10,0,43],["Andurs",10,0,11],["Heimskr",10,0,11],["Eimar",10,0,1],["Mallus Maccius",10,2,9],["Sabjorn",10,0,9],["Avulstein Gray-Mane",10,0,1],["Eorlund Gray-Mane",10,0,5],["Fralia Gray-Mane",10,4,20],["Olfina Gray-Mane",10,0,13],["Alfhild Battle-Born",10,0,15],["Bergritte Battle-Born",10,4,1],["Idolaf Battle-Born",10,0,1],["Jon Battle-Born",10,0,9],["Lars Battle-Born",10,0,9],["Olfrid Battle-Born",10,0,1],["Aela the Huntress",10,0,25],["Athis",10,5,1],["Brill",10,0,9],["Farkas",10,0,5],["Kodlak Whitemane",10,0,1],["Njada Stonearm",10,0,1],["Ria",10,2,1],["Skjor",10,0,1],["Tilma the Haggard",10,4,9],["Torvar",10,0,1],["Vignar Gray-Mane",10,4,1],["Vilkas",10,0,1],["Olava the Feeble",10,4,9],["Gloth",10,0,15],["Nimriel",10,11,15],["Severio Pelagia",10,2,15],["Acolyte Jenssen",10,0,11],["Danica Pure-Spring",10,0,11],["Maurice Jondrelle",10,1,19],["Uthgerd the Unbroken",10,0,1],["Adrianne Avenicci",10,2,5],["Ulfberth War-Bear",10,0,5],["Bjorlam",10,0,1],["Jervar",10,0,1],["Lillith Maiden-Loom",10,4,32],["Skulvar Sable-Hilt",10,0,1],["Ysolda",10,0,9],["Aventus Aretino",11,0,4],["Neetrenaza",11,7,32],["Scouts-Many-Marshes",11,7,5],["Shahvee",11,7,9],["Stands-In-Shallows",11,7,7],["Aval Atheron",11,5,20],["Faryl Atheron",11,5,15],["Suvaris Atheron",11,5,9],["Belyn Hlaalu",11,5,15],["Hermir Strong-Heart",11,0,5],["Oengul War-Anvil",11,0,5],["Bolfrida Brandy-Mug",11,0,15],["Brunwulf Free-Winter",11,0,1],["Calixto Corrium",11,2,7],["Adonato Leotelli",11,2,12],["Captain Lonely-Gale",11,0,1],["Elda Early-Dawn",11,0,13],["Luaffyn",11,5,7],["Nils",11,4,9],["Rolff Stone-Fist",11,0,1],["Stenvar",11,0,1],["Susanna the Wicked",11,0,7],["Adelaisa Vendicci",11,2,9],["Orthus Endario",11,2,9],["Calder",11,0,1],["Helgird",11,4,11],["Adisla",11,0,15],["Tulvur",11,0,15],["Tiber",11,9,27],["Ysgramor",11,9,27],["Grimvar Cruel-Sea",11,0,4],["Hillevi Cruel-Sea",11,0,15],["Idesa Sadri",11,5,9],["Torsten Cruel-Sea",11,0,15],["Nilsine Shatter-Shield",11,0,9],["Torbjorn Shatter-Shield",11,0,1],["Tova Shatter-Shield",11,0,9],["Ambarys Rendar",11,5,13],["Brelas",1,11,20],["Malborn",12,11,9],["Malthyr Elenil",11,5,20],["Niranye",11,6,25],["Dalan Merchad",11,1,1],["Kjar",11,0,8],["Voldsea Giryon",11,5,7],["Gjalund Salt-Sage (Skyrim)",1,0,37],["Lygrleid (Skyrim)",1,0,37],["Sogrlaf (Skyrim)",1,0,37],["Angrenor Once-Honored",11,0,31],["Gort",11,0,1],["J'datharr",1,12,2],["Silda the Unseen",11,0,25],["Sofie",11,0,4],["Galmar Stone-Fist",11,0,1],["Jorleif",11,0,9],["Sifnar Ironkettle",11,4,1],["Ulfric Stormcloak",11,0,1],["Windhelm Guard",1,0,1],["Wuunferth the Unliving",11,4,35],["Yrsarald Thrice-Pierced",11,0,10],["Revyn Sadri",11,5,1],["Jora",11,0,11],["Lortheim",11,0,11],["Viola Giordano",11,2,9],["Nurelion",11,6,21],["Quintus Navale",11,2,35],["Alfarinn",11,0,1],["Arivanya",11,6,12],["Ulundil",11,6,8],["Birna",13,0,20],["Ranmir",13,0,9],["Ancano",13,6,21],["Gelebros",1,11,35],["Quaranir",1,6,35],["Savos Aren",13,5,29],["Tandil",1,6,35],["Urag gro-Shub",13,8,32],["Arniel Gane",13,1,29],["Brelyna Maryon",13,5,34],["Enthir",13,11,35],["J'zargo",13,12,35],["Mirabelle Ervine",13,1,21],["Nirya",13,6,35],["Onmund",13,0,35],["Tolfdir",13,4,44],["Colette Marence",13,1,19],["Drevis Neloren",13,5,35],["Faralda",13,6,35],["Phinis Gestor",13,1,29],["Sergius Turrianus",13,2,44],["Dagur",13,0,13],["Eirid",13,0,4],["Haran",13,0,13],["Nelacar",13,6,35],["Assur",13,0,4],["Kai Wet-Pommel",13,0,10],["Korir",13,0,9],["Malur Seloth",13,5,24],["Thaena",13,0,9],["Winterhold Guard",1,0,1],["Kraldar",13,0,9],["Thonjolf",13,0,9],["Augur of Dunlain",1,1,1],["Velehk Sain",1,14,1],["Azzada Lylvieve",14,3,15],["Clinton Lylvieve",14,1,4],["Julienne Lylvieve",14,1,1],["Michel Lylvieve",14,1,15],["Aldepius",14,2,10],["Faida",14,0,13],["Varnius Junius",14,2,15],["Horgeir",14,0,18],["Lodvar",14,0,18],["Olda",14,0,18],["Commander Maro",14,2,1],["Gaius Maro",14,2,1],["Penitus Oculatus Agent",1,2,16],["Gunnar Stone-Eye",15,4,0],["Haming",1,0,1],["Ingrid",15,0,13],["Matlara",15,0,1],["Torolf",15,0,18],["Vilod",15,0,1],["Elenwen",1,6,35],["Hadvar",16,0,1],["Headsman",1,2,43],["Imperial Captain",15,2,1],["Priestess of Arkay",15,2,11],["Gunjar",1,0,43],["Lokir",1,0,40],["Ralof",16,0,28],["Boti",17,0,15],["Fastred",17,0,15],["Jofthor",17,0,15],["Klimmek",17,0,9],["Bassianus Axius",18,0,9],["Gwilin",17,11,9],["Lynly Star-Sung",17,0,15],["Temba Wide-Arm",17,0,9],["Wilhelm",17,0,13],["Barknar",17,0,8],["Ivarstead Guard",17,0,10],["Narfi",17,0,31],["Enmon",19,1,0],["Mena",19,1,9],["Ainethach",19,1,0],["Belchimac",19,1,0],["Lash gra-Dushnikh",19,8,0],["Ragnar",19,0,0],["Atar",1,0,1],["Alvor",16,0,5],["Dorthe",16,0,4],["Sigrid",16,0,5],["Faendal",16,11,25],["Frodnar",16,0,4],["Gerdur",16,0,18],["Hod",16,0,18],["Stump",1,9,27],["Camilla Valerius",16,2,20],["Lucan Valerius",16,2,20],["Delphine",16,1,45],["Embry",16,0,18],["Orgnar",16,0,13],["Hilde",16,4,9],["Sven",16,0,18],["Ennis",20,3,15],["Halvar",20,0,22],["Reldith",20,6,15],["Erik the Slayer",20,0,28],["Mralki",20,0,13],["Britte",20,0,4],["Lemkil",20,0,15],["Sissel",20,0,4],["Jouane Manette",20,4,21],["Rorik",20,0,1],["Filnjar",21,0,5],["Grogmar gro-Burzag",21,8,0],["Odfel",21,0,0],["Sylgja",21,0,0],["Shor's Stone Guard",21,0,10],["Baldor Iron-Shaper",22,0,37],["Deor Woodcutter",22,0,37],["Yrsa",1,0,37],["Edla",22,0,37],["Nikulas",22,0,37],["Fanari Strong-Voice",22,0,37],["Tharstan",22,4,37],["Morwen",22,0,37],["Aeta",22,0,37],["Finna",22,0,37],["Oslaf",23,0,37],["Frea",22,0,46],["Storn Crag-Strider",22,4,47],["Wulf Wild-Blood",22,0,1],["Chief Burguk",24,8,1],["Arob",24,8,23],["Gharol",24,8,5],["Ghorbash the Iron Hand",24,8,8],["Murbul",24,8,6],["Nagrub",24,8,8],["Shel",24,8,23],["Dulug",24,8,23],["Ghak",24,8,23],["Mahk",24,8,23],["Oglub",24,8,23],["Umurn",24,8,23],["Chief Yamarz",25,8,23],["Atub",25,8,35],["Garakh",25,8,5],["Gularzob",25,8,23],["Lob",25,8,8],["Ogol",25,8,23],["Ugor",25,8,8],["Chief Larak",26,8,1],["Bagrak",26,8,23],["Borgakh the Steel Heart",26,8,23],["Sharamph",26,8,6],["Shuftharz",26,8,5],["Ghamorz",26,8,0],["Gul",26,8,0],["Olur",26,8,8],["Chief Mauhulakh",27,8,23],["Bolar",27,8,6],["Dushnamub",27,8,23],["Urog",27,8,8],["Yatul",27,8,8],["Bor",27,8,0],["Gadba gro-Largash",27,8,1],["Mogdurz",27,8,0],["Mul gro-Largash",27,8,1],["Legate Constantius Tituleius",1,2,10],["Legate Fasendil",1,6,10],["Legate Hrollod",1,0,10],["Legate Sevan Telendas",1,5,10],["Arrald Frozen-Heart",1,0,10],["Gonnar Oath-Giver",1,0,10],["Istar Cairn-Breaker",1,0,10],["Kottir Red-Shoal",1,0,10],["Thorygg Sun-Killer",1,0,10],["General Falx Carius",1,2,1],["Maximian Axius",1,10,27],["Ildari Sarothril",1,5,29],["Niyya",1,3,35],["Derkeethus",28,7,8],["Hrefna",28,0,4],["Sondas Drenim",28,5,13],["Tormir",28,0,8],["Annekke Crag-Jumper",28,0,8],["Verner Rock-Chucker",28,0,1],["Stormcloak Guard",29,0,10],["Agmaer",1,0,22],["Beleval",1,11,22],["Celann",1,1,1],["Durak",1,8,8],["Florentius Baenius",1,2,11],["Gunmar",1,0,5],["Ingjard",1,0,1],["Isran",1,3,5],["Mogrul",1,8,22],["Sorine Jurard",1,1,25],["Bran",1,9,27],["Sceolang",1,9,27],["Dexion Evicus",1,2,36],["Serana",1,0,33],["Vigilant Tolan",1,0,14],["Dravynea the Stoneweaver",30,5,21],["Iddra",30,0,9],["Kjeld",30,0,9],["Kjeld the Younger",30,0,1],["Ganna Uriel",30,2,18],["Gemma Uriel",30,2,18],["Klija Wolf-Claw",30,0,10],["Roggi Knot-Beard",30,0,0],["Pactur",31,0,9],["Sirgar",31,0,9],["Sorli the Builder",31,0,9],["Gestur Rockbreaker",31,0,0],["Hjaalmarch Guard",31,0,10],["Jesper",31,0,0],["Swanhvir",31,0,0],["Teeba-Ei",31,7,32],["Bujold the Unworthy",1,0,37],["Elmus",1,0,37],["Halbarn Iron-Fur",1,0,37],["Herkja",1,0,37],["Hilund",1,0,37],["Kuvar",1,0,5],["Sirkjorg",1,0,37],["Feran Sadri",1,5,48],["Fura Bloodmouth",1,0,1],["Garan Marethi",1,5,6],["Hestla",1,0,33],["Lord Harkon",1,0,33],["Modhna",1,1,1],["Namasur",1,3,6],["Orthjolf",1,0,17],["Rargal Thrallmaster",1,0,33],["Ronthil",1,11,12],["Salonia Caelia",1,2,33],["Stalf",1,0,48],["Vingalmo",1,6,48],["CuSith",1,9,27],["Garmr",1,9,27],["Watchman",1,4,15],["Vampire Cattle",1,0,37],["Aeri",1,0,18],["Ennodius Papius",1,2,18],["Kodrir",1,0,18],["Leifur",1,0,18],["Froki Whetted-Blade",1,4,8],["Hern",1,0,18],["Hert",1,0,18],["Keeper Carcette",1,1,14],["Gralnach",1,0,18],["Grosta",1,0,18],["Rift Guard",1,0,10],["Markus",1,0,1],["Oriella",1,0,12],["Arngeir",1,4,11],["Borri",1,4,11],["Einarth",1,4,11],["Wulfgar",1,4,11],["Gunjar",1,0,1],["Llewellyn the Nightingale",1,0,12],["Curwe",1,6,15],["Vantus Loreius",1,2,9],["Gilfre",1,2,18],["Balagog gro-Nolob",1,8,7],["Fultheim",1,0,1],["Hadring",1,0,1],["Eydis",1,0,13],["Ghost of Old Hroldan",1,0,1],["Leontius Salvius",1,2,13],["Skuli",1,0,4],["Aduri Sarethi",1,5,15],["Avrusa Sarethi",1,5,3],["Imperial Soldier",1,0,1],["Perth",1,1,0],["Tuthul",1,1,0],["Gissur",1,0,31],["Razelan",1,3,9],["Rulindil",1,6,35],["Tsavani",1,12,9],["Angvid",1,0,1],["Badnir",1,0,1],["Gunding",1,0,1],["Thorgar",1,0,1],["Engar",1,0,1],["Sonir",1,0,12],["Adventurer",1,13,49],["Garuk Windrime",1,0,17],["Haknir Death-Brand (ghost)",1,0,50],["Thalin Ebonhand",1,0,48],["Bradyn",1,5,22],["Kolbjorn Guard",1,0,22],["Miner",1,5,22],["Mireli",1,5,22],["Ralis Sedarys",1,5,51],["Merilar Rendas",1,5,35],["Servos Rendas",1,5,48],["Benkum",1,0,37],["Hjalfar",1,0,37],["Liesl",1,0,37],["Palevius Lex",1,4,37],["Sacrifice",1,1,9],["Hermaeus Mora",1,8,37],["Miraak",1,0,52],["Ahjisi",1,12,22],["Batum gra-Bar",1,8,22],["Eriana",1,3,22],["Heratar",1,0,22],["Hoddreid",1,0,48],["J'Kier",1,12,1],["Ma'tasarr",1,12,9],["Ra'kheran",1,12,22],["Rissing",1,0,22],["Torkild the Fearsome",1,0,22],["Tsrasuna",1,12,22],["Yar gro-Gatuk",1,8,22],["Esmond Tyne",1,1,22],["Alvide",1,0,37],["Barknar",1,0,37],["Jayri",1,3,37],["Ollrod",1,0,22],["Sern",1,4,37],["Tilde",1,0,22],["Vori",1,0,22],["Eydis",1,0,22],["Ulyn",1,5,48],["Arch-Curate Vyrthur",1,15,53],["Prelate Athring",1,15,37],["Prelate Celegriath",1,15,37],["Prelate Edhelbor",1,15,37],["Prelate Nirilor",1,15,37],["Prelate Sidanyis",1,15,37],["Akar",1,0,54],["Hjordis",1,0,54],["Majni",1,0,54],["Rakel",1,0,54],["Saden",1,5,48],["Bjornolfr",1,0,15],["Raleth Eldri",1,5,29],["Captain Avidius",1,3,16],["Emperor Titus Mede II",1,2,2],["Lieutenant Salvarus",1,2,16],["Sailor",1,0,9],["Ancarion",1,6,55],["Thalmor",1,6,30],["Falas Selvayn",1,5,37],["Erlendr",1,0,1],["Felldir the Old",1,0,1],["Gormlaith Golden-Hilt",1,0,1],["Hakon One-Eye",1,0,1],["Hunroor",1,0,1],["Jurgen Windcaller",1,0,1],["Nikulas",1,0,1],["Olaf One-Eye",1,0,1],["Ulfgar the Unending",1,0,1],["Ysgramor",1,0,9],["High King Torygg",1,0,9],["Stormcloak Soldier",1,0,32],["Svaknir",1,0,1],["Tsun",1,0,56],["Ri'saad",1,12,20],["Khayla",1,12,1],["Atahbah",1,12,20],["Ma'randru-jo",1,12,21],["Ahkari",1,12,20],["Dro'marash",1,12,1],["Kharjo",1,12,1],["Zaynabi",1,12,32],["Ma'dran",32,12,20],["Ma'jhad",1,12,1],["Ra'zhinda",1,12,1],["Agent Lorcalin",1,6,55],["Agrane Peryval",1,1,1],["Alain Dufont",1,1,40],["Alea Quintus",1,0,1],["Amaund Motierre",1,1,12],["Angi",1,0,8],["Anise",1,4,29],["Anska",1,0,48],["Aranea Ienith",13,5,21],["Aringoth",1,6,8],["Arondil",1,6,29],["Arvel the Swift",1,5,25],["Asta",1,0,22],["Bashnag",1,8,29],["Beem-Ja",1,7,35],["Brandish",1,1,48],["The Caller",1,6,21],["Captain Hargar",1,0,22],["Captain Valmir (Imperial)",1,6,57],["Champion of Boethiah",1,5,58],["Christer",1,0,13],["Deekus",1,7,2],["Drelas",1,5,21],["Ebony Warrior",1,3,59],["Eisa Blackthorn",1,0,22],["Estormo",1,6,21],["Fjola",1,0,1],["Fultheim the Fearless",1,0,1],["Gallus",1,2,25],["Gavros Plinius",1,2,35],["Geirlund",1,0,1],["Ghunzul",1,8,22],["Golldir",1,0,1],["Hajvarr Iron-Hand",1,0,22],["Haldyn",1,3,21],["Hrodulf",1,0,15],["Hunter",1,13,22],["Illia",1,2,21],["J'darr",1,12,22],["Jiub",1,5,32],["Karita",1,0,1],["Katria",1,0,60],["Kesh the Clean",1,12,36],["Knight-Paladin Gelebor",1,15,37],["Kornalus",1,6,21],["Krev the Skinner",1,13,22],["Kyr",1,0,22],["Larina",1,2,9],["Logrolf the Willful",1,4,11],["Lokil",1,0,33],["Lu'ah Al-Skaven",1,3,29],["Ma'zaka",1,12,9],["Madman",1,0,22],["Malkoran",1,1,29],["Malkus",1,8,48],["Maluril",1,5,9],["Malyn Varen",1,5,35],["Medresi Dran",1,5,9],["Minorne",1,6,29],["Moric Sidrey",1,1,58],["Morven Stroud",1,1,1],["Movarth Piquine",1,13,33],["Naris the Wicked",1,6,21],["Nerien",1,6,35],["Nimphaneth",1,11,29],["Orchendor",1,11,36],["Orthorn",1,6,21],["Paratus Decimius",1,2,29],["Ra'jirr",1,12,22],["Revus Sarvani",1,5,22],["Rexus",1,2,1],["Rigel Strong-Arm",1,0,22],["Rhorlak",1,0,22],["Salma",1,3,22],["Sanyon",1,6,29],["Selveni Nethri",1,5,29],["Septimus Signus",1,4,1],["Sild the Warlock",1,0,21],["Silvia",1,4,49],["Sond",1,0,22],["Stalleo",1,0,48],["Sulla Trebatius",1,2,36],["Telrav",1,2,17],["Thorald Gray-Mane",1,0,5],["Thorek",1,0,21],["Torkild",1,0,54],["Ulfr the Blind",1,0,22],["Umana",1,3,1],["Usha",1,7,9],["Valerica",1,0,33],["Vanik",1,0,5],["Vasha",1,12,1],["Venarus Vulpin",1,2,33],["Veren Duleri",1,5,21],["Vidrald",1,0,1],["Vighar",1,4,33],["Vigilant Adalvald",1,0,14],["Volk",1,0,14],["Wizard",1,11,48],["Wyndelius Gatharian",1,5,48]]}</script>
+<script>
+// A line-for-line JavaScript port of the simulation engine in FINALCOMPARATIVECAMPAIGN.R
+// (structured model, use_zealots = TRUE) and null_baseline_comparison.R (energy-matched null).
+// Indices are 0-based where the R code is 1-based; time steps keep R's 1..150 numbering.
+(function (root) {
+  const CONFIG = {
+    TOTAL_TIME_STEPS: 150,
+    EPSILON: 0.35, MU: 0.40,
+    REPULSION_THRESHOLD: 0.70, REPULSION_RATE_BASE: 0.15,
+    K_INTERACTIONS: 5, HOMOPHILY_RACE: 0.50, HOMOPHILY_FACTION: 0.70,
+    SHOCK_MEAN: 0.15, SHOCK_SD: 0.05, MAX_SHOCK: 0.30,
+    ALPHA_SUSC: 2.0, BETA_SUSC: 3.0,
+  };
+
+  const KEY_NPCS = [
+    'Ulfric Stormcloak', 'General Tullius', 'Galmar Stone-Fist', 'Legate Rikke',
+    'Balgruuf the Greater', 'Vignar Gray-Mane', 'Elisif the Fair',
+    'Fralia Gray-Mane', 'Idolaf Battle-Born',
+    'Maven Black-Briar', 'Brunwulf Free-Winter', 'Brina Merilis',
+    'Dengeir of Stuhn', 'Thongvor Silver-Blood',
+    'Elenwen', 'Ancano', 'Ondolemar', 'The Dragonborn',
+  ];
+  const THALMOR_AGENTS = ['Elenwen', 'Ancano', 'Ondolemar'];
+  const ZEALOT_NAMES = ['Ulfric Stormcloak', 'Galmar Stone-Fist', 'General Tullius', 'Legate Rikke', 'Elenwen', 'Ancano', 'Ondolemar'];
+
+  const LOCATION_TO_HOLD = {
+    'Solitude': 'Solitude', 'Dragon Bridge': 'Solitude', 'Markarth': 'Markarth', 'Karthwasten': 'Markarth',
+    'Falkreath': 'Falkreath', 'Helgen': 'Falkreath', 'Riverwood': 'Falkreath', 'Morthal': 'Morthal',
+    'Windhelm': 'Windhelm', 'Kynesgrove': 'Windhelm', 'Dawnstar': 'Dawnstar', 'Riften': 'Riften',
+    "Shor's Stone": 'Riften', 'Winterhold': 'Winterhold', 'College of Winterhold': 'Winterhold',
+    'Whiterun': 'Whiterun', 'Rorikstead': 'Whiterun',
+  };
+  const HOLD_ALLEGIANCE = {
+    'Solitude': 'Imperial', 'Markarth': 'Imperial', 'Falkreath': 'Imperial', 'Morthal': 'Imperial',
+    'Windhelm': 'Stormcloak', 'Dawnstar': 'Stormcloak', 'Riften': 'Stormcloak', 'Winterhold': 'Stormcloak',
+    'Whiterun': 'Neutral', 'Transient_Wilderness': 'Neutral',
+  };
+  const CLASS_INFLUENCE = {
+    'Jarl': 10, 'Legate': 9, 'Court Wizard': 8, 'Housecarl': 7, 'Thalmor': 9,
+    'Warrior': 5, 'Mage': 5, 'Blacksmith': 4, 'Merchant': 3, 'Citizen': 2, 'Beggar': 1,
+  };
+
+  const SCENARIOS = {
+    Imperial: [
+      { t: 26, name: 'Battle of Whiterun', hold: 'Whiterun', dir: -1 },
+      { t: 51, name: 'Battle for Dawnstar', hold: 'Dawnstar', dir: -1 },
+      { t: 76, name: 'Battle for Riften', hold: 'Riften', dir: -1 },
+      { t: 101, name: 'Battle of Windhelm', hold: 'Windhelm', dir: -1 },
+    ],
+    Stormcloak: [
+      { t: 26, name: 'Battle of Whiterun', hold: 'Whiterun', dir: 1 },
+      { t: 51, name: 'Battle for Falkreath', hold: 'Falkreath', dir: 1 },
+      { t: 76, name: 'Battle for The Reach', hold: 'Markarth', dir: 1 },
+      { t: 101, name: 'Battle for Solitude', hold: 'Solitude', dir: 1 },
+    ],
+  };
+
+  // ---------- random numbers (R's rbeta / rnorm / rbinom / sample, by distribution) ----------
+  function makeRng(seed) {
+    let s = (seed >>> 0) || 1;
+    const unif = () => { // mulberry32
+      s = (s + 0x6D2B79F5) >>> 0;
+      let t = s;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+    let spare = null;
+    const norm = () => {
+      if (spare !== null) { const v = spare; spare = null; return v; }
+      let u, v, r;
+      do { u = unif() * 2 - 1; v = unif() * 2 - 1; r = u * u + v * v; } while (r >= 1 || r === 0);
+      const m = Math.sqrt(-2 * Math.log(r) / r);
+      spare = v * m; return u * m;
+    };
+    const gamma = a => { // Marsaglia and Tsang
+      if (a < 1) return gamma(a + 1) * Math.pow(unif(), 1 / a);
+      const d = a - 1 / 3, c = 1 / Math.sqrt(9 * d);
+      for (;;) {
+        let x, v;
+        do { x = norm(); v = 1 + c * x; } while (v <= 0);
+        v = v * v * v;
+        const u = unif();
+        if (u < 1 - 0.0331 * x * x * x * x) return d * v;
+        if (Math.log(u) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v;
+      }
+    };
+    const beta = (a, b) => { const x = gamma(a); return x / (x + gamma(b)); };
+    const int = n => Math.floor(unif() * n);
+    const binom = (n, p) => { let k = 0; for (let i = 0; i < n; i++) if (unif() < p) k++; return k; };
+    return { unif, norm, beta, int, binom };
+  }
+
+  const clamp = x => (x < 0.01 ? 0.01 : x > 0.99 ? 0.99 : x);
+
+  // ---------- load_and_prepare_data + append_dragonborn + build_agent_arrays ----------
+  function buildAgents(roster, scenario) {
+    const base = roster.agents.map(([name, h, r, c]) => {
+      const rawHome = roster.home[h];
+      const home = LOCATION_TO_HOLD[rawHome === '' ? 'Unknown' : rawHome] || 'Transient_Wilderness';
+      return { name, home, race: roster.race[r], cls: roster.cls[c] };
+    });
+    const infl = base.map(a => CLASS_INFLUENCE[a.cls] ?? 2);
+    const lo = Math.min(...infl), hi = Math.max(...infl);
+    base.forEach((a, i) => {
+      a.hold = HOLD_ALLEGIANCE[a.home] || 'Neutral';
+      a.isKey = KEY_NPCS.includes(a.name);
+      a.influence = hi === lo ? 0.5 : (infl[i] - lo) / (hi - lo);
+      a.prior = priorOf(a);
+      a.kappa = kappaOf(a);
+      a.talos = talosOf(a);
+    });
+    if (scenario === 'Imperial') {
+      base.push({ name: 'The Dragonborn', race: 'Imperial', home: 'Solitude', hold: 'Imperial', cls: 'Warrior',
+        prior: 0.02, kappa: 90, influence: 1.0, talos: 0.30, isKey: true });
+    } else {
+      base.push({ name: 'The Dragonborn', race: 'Nord', home: 'Whiterun', hold: 'Neutral', cls: 'Warrior',
+        prior: 0.98, kappa: 90, influence: 1.0, talos: 0.80, isKey: true });
+    }
+    const races = [...new Set(base.map(a => a.race))];
+    base.forEach(a => {
+      a.isThalmor = THALMOR_AGENTS.includes(a.name);
+      a.isZealot = ZEALOT_NAMES.includes(a.name) ||
+        (Math.abs(a.prior - 0.5) > 0.4 && Math.abs(a.talos) > 0.7 && a.influence > 0.4);
+      a.raceInt = races.indexOf(a.race);
+    });
+    return base;
+  }
+
+  function priorOf(a) {
+    const n = a.name, r = a.race, h = a.home;
+    if (n === 'Ulfric Stormcloak') return 0.98;
+    if (n === 'General Tullius') return 0.02;
+    if (n === 'Galmar Stone-Fist') return 0.97;
+    if (n === 'Legate Rikke') return 0.05;
+    if (/Gray.Mane/.test(n)) return 0.90;
+    if (/Battle.Born/.test(n)) return 0.10;
+    if (THALMOR_AGENTS.includes(n)) return 0.50;
+    if (r === 'High Elf') return 0.20;
+    if (r === 'Nord' && h === 'Windhelm') return 0.85;
+    if (r === 'Nord' && h === 'Dawnstar') return 0.80;
+    if (r === 'Imperial') return 0.15;
+    if (r === 'Nord' && h === 'Solitude') return 0.25;
+    if (r === 'Nord' && h === 'Whiterun') return 0.50;
+    return 0.50;
+  }
+  function kappaOf(a) {
+    if (['Ulfric Stormcloak', 'General Tullius'].includes(a.name)) return 80;
+    if (['Galmar Stone-Fist', 'Legate Rikke'].includes(a.name)) return 60;
+    if (THALMOR_AGENTS.includes(a.name)) return 75;
+    if (a.isKey) return 20;
+    return 8;
+  }
+  function talosOf(a) {
+    if (a.race === 'High Elf') return -1.0;
+    if (a.name === 'Heimskr') return 1.0;
+    if (a.race === 'Nord' && a.hold === 'Stormcloak') return 0.9;
+    if (a.race === 'Nord') return 0.6;
+    if (a.race === 'Imperial') return 0.4;
+    return 0.1;
+  }
+
+  // ---------- one run: run_mc_simulation_vec (structured) or run_mc_null_vec (null) ----------
+  function createRun(agents, scenario, { model = 'structured', driftSd = 0, seed = 1, onDelta = null, fixInHold = false } = {}) {
+    const rng = makeRng(seed);
+    const n = agents.length, K = CONFIG.K_INTERACTIONS;
+    const schedule = SCENARIOS[scenario];
+    const structured = model === 'structured';
+
+    const opinions = new Float64Array(n);
+    for (let i = 0; i < n; i++) opinions[i] = clamp(rng.beta(agents[i].prior * agents[i].kappa, (1 - agents[i].prior) * agents[i].kappa));
+    const suscept = new Float64Array(n);
+    for (let i = 0; i < n; i++) suscept[i] = rng.beta(CONFIG.ALPHA_SUSC, CONFIG.BETA_SUSC);
+    // hold_cur starts from Hold_Allegiance, exactly as in the R code
+    const holdCur = agents.map(a => a.hold);
+    const fac = new Int8Array(n);
+    const setFac = () => { for (let i = 0; i < n; i++) fac[i] = (opinions[i] > 0.6) - (opinions[i] < 0.4); };
+    setFac();
+
+    // personal network: 20 contacts, ~80% from the agent's own hold, sampled with replacement
+    const pools = {};
+    agents.forEach((a, i) => (pools[a.home] ||= []).push(i));
+    const net = new Int32Array(n * 20);
+    for (let i = 0; i < n; i++) {
+      let pool = pools[agents[i].home];
+      if (!pool || pool.length < 2) pool = null;
+      const nLoc = rng.binom(20, 0.8);
+      const picks = [];
+      for (let k = 0; k < nLoc; k++) picks.push(pool ? pool[rng.int(pool.length)] : rng.int(n));
+      for (let k = nLoc; k < 20; k++) picks.push(rng.int(n));
+      for (let k = picks.length - 1; k > 0; k--) { const j = rng.int(k + 1); [picks[k], picks[j]] = [picks[j], picks[k]]; }
+      for (let k = 0; k < 20; k++) net[i * 20 + k] = picks[k];
+    }
+
+    const partners = new Int32Array(n * K);
+    const delta = new Float64Array(n);
+    let t = 0;
+    let lastEvent = null;
+
+    function step() {
+      if (t >= CONFIG.TOTAL_TIME_STEPS) return false;
+      t++;
+      for (let i = 0; i < n; i++) for (let k = 0; k < K; k++) {
+        let p = net[i * 20 + rng.int(20)];
+        if (p === i) p = (i + 1) % n; // (p %% n) + 1 in 1-based R
+        partners[i * K + k] = p;
+      }
+
+      if (structured) {
+        for (let i = 0; i < n; i++) {
+          const oi = opinions[i], fi = fac[i], ri = agents[i].raceInt;
+          let d = 0, rep = 0;
+          for (let k = 0; k < K; k++) {
+            const p = partners[i * K + k];
+            const diff = opinions[p] - oi, ad = Math.abs(diff);
+            const pInf = agents[p].influence;
+            if (ad < CONFIG.EPSILON) {
+              const w = 1 + CONFIG.HOMOPHILY_RACE * (agents[p].raceInt === ri) + CONFIG.HOMOPHILY_FACTION * (fac[p] === fi);
+              d += CONFIG.MU * pInf * w * diff;
+            }
+            if (ad > CONFIG.REPULSION_THRESHOLD) {
+              const opp = fac[p] * fi === -1;
+              const mult = 1 + 1.0 * (opp && agents[p].raceInt !== ri);
+              rep += CONFIG.REPULSION_RATE_BASE * mult * pInf * diff * -1;
+            }
+          }
+          let di = d / K + rep / K;
+          if (agents[i].isThalmor) di = 0.10 * di + 0.05 * (0.5 - oi);
+          if (agents[i].isZealot) di = 0;
+          delta[i] = di;
+        }
+        if (onDelta) onDelta(delta);
+        for (let i = 0; i < n; i++) opinions[i] = clamp(opinions[i] + delta[i]);
+        for (let i = 0; i < n; i++) opinions[i] = clamp(opinions[i] + (agents[i].isZealot ? 0 : rng.norm() * 0.01));
+      } else {
+        for (let i = 0; i < n; i++) opinions[i] = clamp(opinions[i] + rng.norm() * driftSd);
+        for (let i = 0; i < n; i++) opinions[i] = clamp(opinions[i] + rng.norm() * 0.01);
+      }
+
+      lastEvent = null;
+      const ev = schedule.find(e => e.t === t);
+      if (ev) {
+        lastEvent = ev;
+        for (let i = 0; i < n; i++) {
+          // the R code compares allegiance to a hold name, so this is never true; fixInHold compares the home hold
+          const inHold = fixInHold ? agents[i].home === ev.hold : holdCur[i] === ev.hold;
+          const base = Math.max(0, Math.min(CONFIG.MAX_SHOCK, Math.abs(CONFIG.SHOCK_MEAN + rng.norm() * CONFIG.SHOCK_SD)));
+          const talosMod = 1 + 0.3 * agents[i].talos * ev.dir;
+          let tilt = 0;
+          for (let k = 0; k < K; k++) tilt += fac[partners[i * K + k]];
+          const contagion = 1 + 0.1 * (tilt * ev.dir);
+          const prox = (inHold ? 2.0 : 0.6) * Math.max(0.1, contagion);
+          const dir = agents[i].isThalmor ? -Math.sign(opinions[i] - 0.5) : ev.dir;
+          let shock = dir * base * suscept[i] * talosMod * prox;
+          if (structured && agents[i].isZealot) shock *= 0.05;
+          opinions[i] = clamp(opinions[i] + shock);
+        }
+        const flip = ev.dir === 1 ? 'Stormcloak' : 'Imperial';
+        for (let i = 0; i < n; i++) if (holdCur[i] === ev.hold) holdCur[i] = flip;
+      }
+      setFac();
+      return true;
+    }
+
+    return { opinions, step, get t() { return t; }, get lastEvent() { return lastEvent; }, schedule };
+  }
+
+  // calibrate_drift_sd: mean per-step SD (n - 1 denominator, as R's sd) of the structured social delta
+  function calibrateDriftSd(roster, nCal = 5, seed = 42, fixInHold = false) {
+    const agents = buildAgents(roster, 'Imperial');
+    const sds = [];
+    for (let r = 1; r <= nCal; r++) {
+      const run = createRun(agents, 'Imperial', {
+        seed: seed + r,
+        fixInHold,
+        onDelta: d => {
+          let m = 0; for (const v of d) m += v; m /= d.length;
+          let s = 0; for (const v of d) s += (v - m) ** 2;
+          sds.push(Math.sqrt(s / (d.length - 1)));
+        },
+      });
+      while (run.step());
+    }
+    return sds.reduce((a, b) => a + b, 0) / sds.length;
+  }
+
+  const api = { CONFIG, SCENARIOS, buildAgents, createRun, calibrateDriftSd };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  else root.SkyrimABM = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>
+/* Civil War demo: drives SkyrimABM (a port of the paper's R engine) and draws it */
+(() => {
+  const abm = window.SkyrimABM;
+  const roster = JSON.parse(document.getElementById('abm-roster').textContent);
+  const map = document.getElementById('war-map'), hist = document.getElementById('war-hist');
+  const mc = map.getContext('2d'), hc = hist.getContext('2d');
+  const $ = id => document.getElementById(id);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const css = getComputedStyle(document.documentElement);
+  const tok = n => css.getPropertyValue(n).trim();
+  const IMP = [125, 12, 20], MID = [168, 160, 160], STO = [38, 70, 120];
+  const mix = (a, b, f) => a.map((v, i) => Math.round(v + (b[i] - v) * f));
+  const colour = p => { const c = p < 0.5 ? mix(IMP, MID, p / 0.5) : mix(MID, STO, (p - 0.5) / 0.5); return `rgb(${c[0]},${c[1]},${c[2]})`; };
+
+  // rough geography of the nine holds, plus everyone the R code files under Transient_Wilderness
+  const PLACES = {
+    Solitude: [0.27, 0.15], Morthal: [0.40, 0.30], Dawnstar: [0.55, 0.13], Winterhold: [0.80, 0.13],
+    Markarth: [0.09, 0.42], Whiterun: [0.50, 0.53], Windhelm: [0.83, 0.42], Falkreath: [0.33, 0.83],
+    Riften: [0.85, 0.80], Transient_Wilderness: [0.61, 0.79],
+  };
+  const LABEL = { Transient_Wilderness: 'Elsewhere' };
+  const W = map.width, H = map.height, SP = 10;
+
+  let scenario = 'Imperial', model = 'structured', driftSd = null;
+  let agents, run, pos, timer = null, hold = 0;
+
+  function layout() {
+    pos = new Array(agents.length);
+    const byHome = {};
+    agents.forEach((a, i) => (byHome[a.home] ||= []).push(i));
+    for (const [home, ids] of Object.entries(byHome)) {
+      const [cx, cy] = PLACES[home];
+      ids.forEach((id, k) => { // sunflower packing, one dot per NPC
+        const r = SP * 0.55 * Math.sqrt(k + 0.5), th = k * 2.39996;
+        pos[id] = [cx * W + r * Math.cos(th), cy * H + r * Math.sin(th)];
+      });
+    }
+  }
+
+  function drawMap() {
+    mc.fillStyle = tok('--bg'); mc.fillRect(0, 0, W, H);
+    mc.font = `600 17px ${tok('--text')}`; mc.textAlign = 'center'; mc.fillStyle = tok('--ink');
+    const ops = run.opinions;
+    for (let i = 0; i < agents.length; i++) {
+      mc.fillStyle = colour(ops[i]);
+      mc.beginPath(); mc.arc(pos[i][0], pos[i][1], 4, 0, 6.2832); mc.fill();
+    }
+    mc.fillStyle = tok('--ink');
+    for (const [home, [cx, cy]] of Object.entries(PLACES)) {
+      const n = agents.filter(a => a.home === home).length;
+      const r = SP * 0.55 * Math.sqrt(n) + 20;
+      mc.fillText(LABEL[home] || home, cx * W, Math.max(18, cy * H - r));
+    }
+  }
+
+  function drawHist() {
+    const B = 25, bins = new Array(B).fill(0), ops = run.opinions;
+    for (const v of ops) bins[Math.min(B - 1, Math.floor(v * B))]++;
+    const w = hist.width, h = hist.height, max = ops.length * 0.4;
+    hc.fillStyle = tok('--bg'); hc.fillRect(0, 0, w, h);
+    hc.fillStyle = tok('--surface'); hc.fillRect(w * 0.4, 0, w * 0.2, h);
+    const bw = w / B;
+    bins.forEach((c, b) => {
+      const bh = Math.min(h - 6, (c / max) * (h - 6));
+      hc.fillStyle = colour((b + 0.5) / B);
+      hc.fillRect(b * bw + 2, h - bh, bw - 4, bh);
+    });
+  }
+
+  function stats() {
+    const ops = run.opinions; let m = 0, neu = 0;
+    for (const v of ops) { m += v; if (v >= 0.4 && v <= 0.6) neu++; }
+    $('war-t').textContent = `${run.t} of 150`;
+    $('war-mean').textContent = (m / ops.length).toFixed(2);
+    $('war-neu').textContent = `${Math.round((neu / ops.length) * 100)}%`;
+  }
+
+  const render = () => { drawMap(); drawHist(); stats(); };
+
+  function reset() {
+    stop();
+    if (model === 'null' && driftSd === null) driftSd = abm.calibrateDriftSd(roster);
+    agents = abm.buildAgents(roster, scenario);
+    layout();
+    run = abm.createRun(agents, scenario, { model, driftSd: driftSd || 0, seed: (Math.random() * 2 ** 31) >>> 0 });
+    $('war-event').textContent = 'Before the first battle';
+    $('war-run').textContent = 'Run the war';
+    render();
+  }
+
+  function tick() {
+    if (hold > 0) { hold--; return; }
+    if (!run.step()) { stop(); $('war-run').textContent = 'Run again'; $('war-event').textContent = 'The war is over'; return; }
+    const ev = run.lastEvent;
+    if (ev) { $('war-event').textContent = `Step ${ev.t}: ${ev.name}`; hold = reduce ? 0 : 8; }
+    render();
+  }
+  function stop() { clearInterval(timer); timer = null; }
+  function start() {
+    if (run.t >= 150) reset();
+    if (timer) { stop(); $('war-run').textContent = 'Resume'; return; }
+    $('war-run').textContent = 'Pause';
+    timer = setInterval(tick, 60);
+  }
+
+  $('war-run').addEventListener('click', start);
+  $('war-reset').addEventListener('click', reset);
+  document.querySelectorAll('#civil-war input[name="sc"]').forEach(r => r.addEventListener('change', e => { scenario = e.target.value; reset(); }));
+  document.querySelectorAll('#civil-war input[name="model"]').forEach(r => r.addEventListener('change', e => { model = e.target.value; reset(); }));
+
+  function who(e) {
+    const r = map.getBoundingClientRect();
+    const x = (e.clientX - r.left) * W / r.width, y = (e.clientY - r.top) * H / r.height;
+    let best = -1, bd = 400;
+    pos.forEach(([px, py], i) => { const d = (px - x) ** 2 + (py - y) ** 2; if (d < bd) { bd = d; best = i; } });
+    if (best < 0) return;
+    const a = agents[best], p = run.opinions[best];
+    const side = p < 0.4 ? 'leans Imperial' : p > 0.6 ? 'leans Stormcloak' : 'undecided';
+    $('war-who').textContent = `${a.name}, ${LABEL[a.home] || a.home}: ${p.toFixed(2)}, ${side}`;
+  }
+  map.addEventListener('pointermove', who);
+  map.addEventListener('pointerdown', who);
+
+  reset();
+})();
+</script>
+<script>
+/* The page's motion layer: the name forms from 1,010 dots, figures count up,
+   and red panels fold open from the axis.
+   Everything plays once; with reduced motion the page simply shows its finished state. */
+(() => {
+  const root = document.documentElement;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const easeOut = t => 1 - Math.pow(1 - t, 5);
+
+  /* ---------- once something scrolls into view ---------- */
+  const onView = (els, fn, margin = '0px 0px -10% 0px') => {
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { fn(e.target); io.unobserve(e.target); }
+    }), { rootMargin: margin });
+    els.forEach(el => io.observe(el));
+  };
+
+  /* ---------- on phones every Work bar starts closed; its summary already carries the result ---------- */
+  if (matchMedia('(max-width: 760px)').matches) document.querySelectorAll('#work details[open]').forEach(d => d.removeAttribute('open'));
+
+  /* ---------- figures count up ---------- */
+  const NUM = /\d+(?:[.,]\d+)?/g;
+  const countUp = el => {
+    const text = el.textContent;
+    const parts = [...text.matchAll(NUM)].filter(m => { const v = parseFloat(m[0].replace(',', '')); return !(Number.isInteger(v) && v >= 1900 && v <= 2100); });
+    if (!parts.length || reduce) return;
+    const t0 = performance.now(), dur = 1300;
+    const frame = now => {
+      const k = easeOut(Math.min(1, (now - t0) / dur));
+      let out = '', last = 0;
+      for (const m of parts) {
+        const raw = m[0], dec = (raw.split('.')[1] || '').length, v = parseFloat(raw.replace(',', ''));
+        out += text.slice(last, m.index) + (v * k).toFixed(dec);
+        last = m.index + raw.length;
+      }
+      el.textContent = out + text.slice(last);
+      if (k < 1) requestAnimationFrame(frame); else el.textContent = text;
+    };
+    requestAnimationFrame(frame);
+  };
+  onView([...document.querySelectorAll('.intro .facts b, .entry .side .fig, .figure .big')], countUp);
+
+  /* ---------- red panels fold open from the axis ---------- */
+  const panels = [...document.querySelectorAll('#civil-war, footer')];
+  if (!reduce) {
+    panels.forEach(p => p.classList.add('fold'));
+    onView(panels, p => p.classList.add('open'), '0px 0px -12% 0px');
+  }
+
+  /* ---------- the name forms from 1,010 dots ---------- */
+  const h1 = document.querySelector('.title h1');
+  const line = h1 && h1.querySelector('.mask > span');
+  if (!line || reduce || scrollY > 40) return;
+  root.classList.add('dots');
+
+  const start = async () => {
+    await document.fonts.ready;
+    // the text's baseline, read from a zero-size marker sitting on it
+    const probe = document.createElement('span');
+    probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+    line.appendChild(probe);
+    const box = line.getBoundingClientRect(), base = probe.getBoundingClientRect().top;
+    probe.remove();
+    const cs = getComputedStyle(h1);
+    const dpr = Math.min(2, devicePixelRatio || 1);
+
+    // rasterize the name where it really sits, then sample its pixels
+    const off = document.createElement('canvas');
+    off.width = Math.ceil(box.width); off.height = Math.ceil(box.height);
+    const o = off.getContext('2d');
+    o.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    if ('letterSpacing' in o) o.letterSpacing = cs.letterSpacing;
+    o.textBaseline = 'alphabetic';
+    o.fillText(line.textContent, 0, base - box.top);
+    const px = o.getImageData(0, 0, off.width, off.height).data;
+    const N = 1010, pts = [];
+    let step = Math.max(2, Math.round(Math.sqrt((off.width * off.height * 0.18) / N)));
+    for (let tries = 0; tries < 6 && pts.length < N; tries++, step = Math.max(1, step - 1)) {
+      pts.length = 0;
+      for (let y = 0; y < off.height; y += step) for (let x = 0; x < off.width; x += step) {
+        if (px[(y * off.width + x) * 4 + 3] > 140) pts.push([box.left + x, box.top + y]);
+      }
+    }
+    if (pts.length < 50) { root.classList.add('formed'); return; }
+    for (let i = pts.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pts[i], pts[j]] = [pts[j], pts[i]]; }
+    const targets = pts.slice(0, N);
+
+    // each dot starts somewhere on the page's edge
+    const W = innerWidth, H = innerHeight;
+    const dots = targets.map(([tx, ty]) => {
+      const side = Math.floor(Math.random() * 4), r = Math.random();
+      const sx = side === 0 ? r * W : side === 1 ? W + 8 : side === 2 ? r * W : -8;
+      const sy = side === 0 ? -8 : side === 1 ? r * H : side === 2 ? H + 8 : r * H;
+      return { sx, sy, tx, ty, d: Math.random() * 380 };
+    });
+
+    const cv = document.createElement('canvas');
+    cv.className = 'name-dots';
+    cv.setAttribute('aria-hidden', 'true');
+    cv.width = W * dpr; cv.height = H * dpr;
+    document.body.appendChild(cv);
+    const c = cv.getContext('2d');
+    c.scale(dpr, dpr);
+    c.fillStyle = cs.color;
+    const size = Math.max(1.4, parseFloat(cs.fontSize) / 70);
+
+    const t0 = performance.now(), dur = 1150;
+    let done = false;
+    const finish = () => {
+      if (done) return; done = true;
+      root.classList.add('formed');
+      cv.classList.add('gone');
+      setTimeout(() => cv.remove(), 600);
+      removeEventListener('scroll', finish);
+    };
+    addEventListener('scroll', finish, { passive: true });
+    const frame = now => {
+      if (done) return;
+      c.clearRect(0, 0, W, H);
+      let all = true;
+      for (const p of dots) {
+        const k = easeOut(Math.min(1, Math.max(0, (now - t0 - p.d) / dur)));
+        if (k < 1) all = false;
+        c.beginPath();
+        c.arc(p.sx + (p.tx - p.sx) * k, p.sy + (p.ty - p.sy) * k, size, 0, 6.2832);
+        c.fill();
+      }
+      if (all) finish(); else requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  };
+  start().catch(() => root.classList.add('formed'));
+})();
+</script>
+<!--/abm-->
 </body>
 </html>
