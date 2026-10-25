@@ -362,7 +362,7 @@ h2 + h3.group { margin-top: 36px; }
 </style>
 </head>
 <body>
-<p id="debug">debug, build 2026-10-25 02:51: JavaScript is NOT running in this browser, so the name animation can't play.</p>
+<p id="debug">debug, build 2026-10-25 03:05: JavaScript is NOT running in this browser, so the name animation can't play.</p>
 <script>document.documentElement.classList.add('js')</script>
 <script>
 /* add ?debug or #debug to the address to see what the page's scripts did, on screen */
@@ -379,7 +379,7 @@ h2 + h3.group { margin-top: 36px; }
     box.textContent = notes.join('\n');
   };
   window.__dbg = function (msg) { notes.push(Math.round(performance.now()) + 'ms ' + msg); draw(); };
-  window.__dbg('debug on, build 2026-10-25 02:51');
+  window.__dbg('debug on, build 2026-10-25 03:05');
   window.__dbg(navigator.userAgent);
   addEventListener('error', function (e) { window.__dbg('ERROR: ' + e.message + ' (line ' + e.lineno + ':' + e.colno + ')'); });
   addEventListener('unhandledrejection', function (e) { window.__dbg('ERROR (promise): ' + (e.reason && e.reason.message || e.reason)); });
@@ -1194,8 +1194,10 @@ h2 + h3.group { margin-top: 36px; }
     const cs = getComputedStyle(h1);
     const face = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
     // measure only in the real display face (embedded, so normally instant); after 3s without it, just show the name
+    // load only Instrument Serif: the fallback faces come from local fonts phones don't have, and asking for them makes load() fail
+    const own = `${cs.fontWeight} ${cs.fontSize} "Instrument Serif"`;
     const loaded = await Promise.race([
-      document.fonts.load(face, line.textContent).then(() => document.fonts.check(face, line.textContent)),
+      document.fonts.load(own, line.textContent).then(fs => fs.length > 0),
       new Promise(r => setTimeout(() => r(false), 3000)),
     ]).catch(() => false);
     // fonts.check is also true when the face is simply missing, so look for Instrument Serif itself
