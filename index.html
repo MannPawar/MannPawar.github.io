@@ -1176,10 +1176,12 @@ h2 + h3.group { margin-top: 36px; }
     for (let tries = 0; tries < 6 && pts.length < N; tries++, step = Math.max(1, step - 1)) {
       pts.length = 0;
       for (let y = 0; y < off.height; y += step) for (let x = 0; x < off.width; x += step) {
-        if (px[(y * off.width + x) * 4 + 3] > 140) pts.push([box.left + x, box.top + y]);
+        const cx = Math.min(off.width - 1, x + (step >> 1)), cy = Math.min(off.height - 1, y + (step >> 1));
+        if (px[(cy * off.width + cx) * 4 + 3] > 190) pts.push([box.left + cx, box.top + cy]);
       }
     }
     if (pts.length < 50) { root.classList.add('formed'); return; }
+    const grid = Math.max(1, step + 1); // the step the last pass sampled at
     for (let i = pts.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pts[i], pts[j]] = [pts[j], pts[i]]; }
     const targets = pts.slice(0, N);
 
@@ -1200,7 +1202,7 @@ h2 + h3.group { margin-top: 36px; }
     const c = cv.getContext('2d');
     c.scale(dpr, dpr);
     c.fillStyle = cs.color;
-    const size = Math.max(1.4, parseFloat(cs.fontSize) / 70);
+    const size = Math.max(0.9, grid * 0.36);
 
     const t0 = performance.now(), dur = 1150;
     let done = false;
