@@ -1153,6 +1153,8 @@ h2 + h3.group { margin-top: 36px; }
   /* ---------- the name forms from dots ---------- */
   const h1 = document.querySelector('.title h1');
   const line = h1 && h1.querySelector('.mask > span');
+  // a reload always opens at the top, so the name animation plays instead of being skipped below the fold
+  if ('scrollRestoration' in history && !location.hash) { history.scrollRestoration = 'manual'; if (scrollY > 0) scrollTo(0, 0); }
   if (!line || reduce || scrollY > 40) return;
   root.classList.add('dots');
   const show = () => root.classList.add('formed');
