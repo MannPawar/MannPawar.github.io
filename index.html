@@ -19,6 +19,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* Fallbacks sized to Instrument Serif, so the name keeps its width and height before the web font arrives */
+@font-face { font-family: "Instrument Fallback"; src: local("Times New Roman"), local("TimesNewRomanPSMT"), local("Times"); size-adjust: 84.8%; ascent-override: 99%; descent-override: 31%; line-gap-override: 0%; }
+@font-face { font-family: "Instrument Fallback Wide"; src: local("Noto Serif"), local("Droid Serif"), local("Georgia"); size-adjust: 76.7%; ascent-override: 99%; descent-override: 31%; line-gap-override: 0%; }
 /* The printed annual: one vertical axis at 42% of the page; text pages hang from it, colour pages carry one figure. */
 :root {
   color-scheme: light;
@@ -33,7 +36,7 @@
   --field-dim: #b04a52;
   --field-2: #6a0a11;
 
-  --display: "Instrument Serif", "Times New Roman", serif;
+  --display: "Instrument Serif", "Instrument Fallback", "Instrument Fallback Wide", serif;
   --text: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
 
   --step-small: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);
@@ -98,7 +101,7 @@ p { margin: 0; }
 
 .title { align-items: end; padding-block: 40px 48px; }
 .title .side p { font-size: var(--step-body); color: var(--muted); max-width: 32ch; }
-.title h1 { font-size: var(--step-display); line-height: 0.86; letter-spacing: -0.02em; margin-left: -0.04em; }
+.title h1 { font-size: var(--step-display); line-height: 0.86; letter-spacing: -0.02em; margin-left: -0.04em; white-space: nowrap; }
 .title .lead { font-size: var(--step-lead); line-height: 1.3; max-width: 40ch; margin-top: 24px; }
 .mask { display: block; overflow: hidden; padding-bottom: 0.06em; }
 .mask > span { display: block; }
@@ -278,7 +281,7 @@ h2 + h3.group { margin-top: 36px; }
   .js.dots .mask > span { transform: none; opacity: 0; transition: opacity 450ms var(--ease-out); }
   .js.dots.formed .mask > span { opacity: 1; }
   .js.dots:not(.formed) .mask > span { transition: none; }
-  .name-dots { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1; transition: opacity 500ms var(--ease-out); }
+  .name-dots { position: fixed; top: 0; left: 0; pointer-events: none; z-index: -1; transition: opacity 500ms var(--ease-out); }
   .name-dots.gone { opacity: 0; }
   /* red panels open from a thin line on the axis */
   .fold { position: relative; isolation: isolate; }
@@ -1097,7 +1100,7 @@ h2 + h3.group { margin-top: 36px; }
 })();
 </script>
 <script>
-/* The page's motion layer: the name forms from 1,010 dots, figures count up,
+/* The page's motion layer: the name forms from dots, figures count up,
    and red panels fold open from the axis.
    Everything plays once; with reduced motion the page simply shows its finished state. */
 (() => {
@@ -1145,89 +1148,104 @@ h2 + h3.group { margin-top: 36px; }
     onView(panels, p => p.classList.add('open'), '0px 0px -12% 0px');
   }
 
-  /* ---------- the name forms from 1,010 dots ---------- */
+  /* ---------- the name forms from dots ---------- */
   const h1 = document.querySelector('.title h1');
   const line = h1 && h1.querySelector('.mask > span');
   if (!line || reduce || scrollY > 40) return;
   root.classList.add('dots');
+  const show = () => root.classList.add('formed');
 
   const start = async () => {
-    await document.fonts.ready;
+    const cs = getComputedStyle(h1);
+    const face = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    // measure only in the real display face; if it has not arrived within 1.2s, just show the name
+    const loaded = await Promise.race([
+      document.fonts.load(face, line.textContent).then(() => document.fonts.check(face, line.textContent)),
+      new Promise(r => setTimeout(() => r(false), 1200)),
+    ]).catch(() => false);
+    // fonts.check is also true when the face is simply missing, so look for Instrument Serif itself
+    const real = [...document.fonts].some(f => f.family.replace(/["']/g, '') === 'Instrument Serif' && f.status === 'loaded');
+    if (!loaded || !real) return show();
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); // let the new face lay out
+
     // the text's baseline, read from a zero-size marker sitting on it
     const probe = document.createElement('span');
     probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
     line.appendChild(probe);
     const box = line.getBoundingClientRect(), base = probe.getBoundingClientRect().top;
     probe.remove();
-    const cs = getComputedStyle(h1);
     const dpr = Math.min(2, devicePixelRatio || 1);
 
-    // rasterize the name where it really sits, then sample its pixels
+    // rasterize the name where it sits, then sample its pixels (coordinates relative to the name's box)
     const off = document.createElement('canvas');
     off.width = Math.ceil(box.width); off.height = Math.ceil(box.height);
     const o = off.getContext('2d');
-    o.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    o.font = face;
     if ('letterSpacing' in o) o.letterSpacing = cs.letterSpacing;
     o.textBaseline = 'alphabetic';
     o.fillText(line.textContent, 0, base - box.top);
     const px = o.getImageData(0, 0, off.width, off.height).data;
-    const N = 1010, pts = [];
-    let step = Math.max(2, Math.round(Math.sqrt((off.width * off.height * 0.18) / N)));
-    for (let tries = 0; tries < 6 && pts.length < N; tries++, step = Math.max(1, step - 1)) {
-      pts.length = 0;
-      for (let y = 0; y < off.height; y += step) for (let x = 0; x < off.width; x += step) {
-        const cx = Math.min(off.width - 1, x + (step >> 1)), cy = Math.min(off.height - 1, y + (step >> 1));
-        if (px[(cy * off.width + cx) * 4 + 3] > 150) pts.push([box.left + cx, box.top + cy]);
-      }
+    let ink = 0;
+    for (let i = 3; i < px.length; i += 4) if (px[i] > 150) ink++;
+    // about one dot per 7 px² of ink at desktop size, capped so phones stay smooth
+    const N = Math.max(600, Math.min(2600, Math.round(ink / 7)));
+    const step = Math.max(2, Math.round(Math.sqrt(ink / N)));
+    const pts = [];
+    for (let y = 0; y < off.height; y += step) for (let x = 0; x < off.width; x += step) {
+      const cx = Math.min(off.width - 1, x + (step >> 1)), cy = Math.min(off.height - 1, y + (step >> 1));
+      if (px[(cy * off.width + cx) * 4 + 3] > 150) pts.push([cx, cy]);
     }
-    if (pts.length < 50) { root.classList.add('formed'); return; }
-    const grid = Math.max(1, step + 1); // the step the last pass sampled at
-    for (let i = pts.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pts[i], pts[j]] = [pts[j], pts[i]]; }
-    const targets = pts.slice(0, N);
+    if (pts.length < 50) return show();
+    const size = Math.max(1.1, step * 0.5);
 
-    // each dot enters from the top edge or from a side, never from below the name
-    const W = innerWidth, H = innerHeight;
-    const floor = Math.min(H, box.bottom);
-    const dots = targets.map(([tx, ty]) => {
-      const side = Math.floor(Math.random() * 3), r = Math.random();
-      const sx = side === 0 ? r * W : side === 1 ? W + 8 : -8;
-      const sy = side === 0 ? -8 : r * floor;
-      return { sx, sy, tx, ty, d: Math.random() * 380 };
-    });
-    // nothing is ever drawn below the name, so the paragraph under it stays clean
-    const clipBottom = box.bottom + 2;
-
+    // the canvas covers the viewport in exact CSS pixels
+    const W = document.documentElement.clientWidth, H = window.innerHeight;
     const cv = document.createElement('canvas');
     cv.className = 'name-dots';
     cv.setAttribute('aria-hidden', 'true');
-    cv.width = W * dpr; cv.height = H * dpr;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    cv.style.width = W + 'px'; cv.style.height = H + 'px';
     document.body.appendChild(cv);
     const c = cv.getContext('2d');
     c.scale(dpr, dpr);
     c.fillStyle = cs.color;
-    const size = Math.max(1.1, grid * 0.47);
+
+    // each dot enters from the top edge or a side, never from below the name
+    const top0 = box.top, left0 = box.left;
+    const dots = pts.map(([tx, ty]) => {
+      const side = Math.floor(Math.random() * 3), r = Math.random();
+      const sx = side === 0 ? r * W : side === 1 ? W + 8 : -8;
+      const sy = side === 0 ? -8 : r * Math.min(H, top0 + box.height);
+      return { sx, sy, tx, ty, d: Math.random() * 380 };
+    });
 
     const t0 = performance.now(), dur = 1150;
     let done = false;
     const finish = () => {
       if (done) return; done = true;
-      root.classList.add('formed');
+      show();
       cv.classList.add('gone');
       setTimeout(() => cv.remove(), 600);
       removeEventListener('scroll', finish);
+      removeEventListener('resize', finish);
     };
     addEventListener('scroll', finish, { passive: true });
+    addEventListener('resize', finish);
     const frame = now => {
       if (done) return;
+      // follow the name if anything above it moved since we measured
+      const r = line.getBoundingClientRect();
+      if (Math.abs(r.width - box.width) > 2) return finish(); // the text itself reflowed
+      const ox = r.left, oy = r.top;
       c.clearRect(0, 0, W, H);
       c.save();
-      c.beginPath(); c.rect(0, 0, W, clipBottom); c.clip();
+      c.beginPath(); c.rect(0, 0, W, oy + box.height + 2); c.clip(); // never draw over the paragraph below
       let all = true;
       for (const p of dots) {
         const k = easeOut(Math.min(1, Math.max(0, (now - t0 - p.d) / dur)));
         if (k < 1) all = false;
         c.beginPath();
-        c.arc(p.sx + (p.tx - p.sx) * k, p.sy + (p.ty - p.sy) * k, size, 0, 6.2832);
+        c.arc(p.sx + (ox + p.tx - p.sx) * k, p.sy + (oy + p.ty - p.sy) * k, size, 0, 6.2832);
         c.fill();
       }
       c.restore();
@@ -1235,7 +1253,7 @@ h2 + h3.group { margin-top: 36px; }
     };
     requestAnimationFrame(frame);
   };
-  start().catch(() => root.classList.add('formed'));
+  start().catch(show);
 })();
 </script>
 <!--/abm-->
