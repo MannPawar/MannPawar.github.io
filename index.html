@@ -1177,7 +1177,7 @@ h2 + h3.group { margin-top: 36px; }
       pts.length = 0;
       for (let y = 0; y < off.height; y += step) for (let x = 0; x < off.width; x += step) {
         const cx = Math.min(off.width - 1, x + (step >> 1)), cy = Math.min(off.height - 1, y + (step >> 1));
-        if (px[(cy * off.width + cx) * 4 + 3] > 190) pts.push([box.left + cx, box.top + cy]);
+        if (px[(cy * off.width + cx) * 4 + 3] > 150) pts.push([box.left + cx, box.top + cy]);
       }
     }
     if (pts.length < 50) { root.classList.add('formed'); return; }
@@ -1202,7 +1202,7 @@ h2 + h3.group { margin-top: 36px; }
     const c = cv.getContext('2d');
     c.scale(dpr, dpr);
     c.fillStyle = cs.color;
-    const size = Math.max(0.9, grid * 0.36);
+    const size = Math.max(1.1, grid * 0.47);
 
     const t0 = performance.now(), dur = 1150;
     let done = false;
