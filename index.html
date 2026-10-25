@@ -355,9 +355,14 @@ h2 + h3.group { margin-top: 36px; }
   .fcols { grid-template-columns: 1fr 1fr; row-gap: 32px; }
   .fcols .credit { grid-column: 1 / -1; }
 }
+/* #debug without JavaScript: says so on screen */
+#debug { display: none; position: fixed; left: 8px; right: 8px; top: 8px; z-index: 2147483647; margin: 0; padding: 10px; background: #111; color: #0f0; font: 12px/1.4 monospace; }
+#debug:target { display: block; }
+.js #debug:target { display: none; }
 </style>
 </head>
 <body>
+<p id="debug">debug, build 2026-10-25 02:51: JavaScript is NOT running in this browser, so the name animation can't play.</p>
 <script>document.documentElement.classList.add('js')</script>
 <script>
 /* add ?debug or #debug to the address to see what the page's scripts did, on screen */
@@ -374,7 +379,7 @@ h2 + h3.group { margin-top: 36px; }
     box.textContent = notes.join('\n');
   };
   window.__dbg = function (msg) { notes.push(Math.round(performance.now()) + 'ms ' + msg); draw(); };
-  window.__dbg('debug on, build 2026-10-25 02:46');
+  window.__dbg('debug on, build 2026-10-25 02:51');
   window.__dbg(navigator.userAgent);
   addEventListener('error', function (e) { window.__dbg('ERROR: ' + e.message + ' (line ' + e.lineno + ':' + e.colno + ')'); });
   addEventListener('unhandledrejection', function (e) { window.__dbg('ERROR (promise): ' + (e.reason && e.reason.message || e.reason)); });
