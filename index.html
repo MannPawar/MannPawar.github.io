@@ -355,37 +355,10 @@ h2 + h3.group { margin-top: 36px; }
   .fcols { grid-template-columns: 1fr 1fr; row-gap: 32px; }
   .fcols .credit { grid-column: 1 / -1; }
 }
-/* #debug without JavaScript: says so on screen */
-#debug { display: none; position: fixed; left: 8px; right: 8px; top: 8px; z-index: 2147483647; margin: 0; padding: 10px; background: #111; color: #0f0; font: 12px/1.4 monospace; }
-#debug:target { display: block; }
-.js #debug:target { display: none; }
 </style>
 </head>
 <body>
-<p id="debug">debug, build 2026-10-25 03:05: JavaScript is NOT running in this browser, so the name animation can't play.</p>
 <script>document.documentElement.classList.add('js')</script>
-<script>
-/* add ?debug or #debug to the address to see what the page's scripts did, on screen */
-(function () {
-  if (!/[?&#]debug\b/.test(location.search + location.hash)) return;
-  var notes = [], box;
-  var draw = function () {
-    if (!document.body) return;
-    if (!box) {
-      box = document.createElement('pre');
-      box.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:2147483647;margin:0;padding:10px;background:#111;color:#0f0;font:12px/1.4 monospace;white-space:pre-wrap;max-height:45vh;overflow:auto';
-      document.body.appendChild(box);
-    }
-    box.textContent = notes.join('\n');
-  };
-  window.__dbg = function (msg) { notes.push(Math.round(performance.now()) + 'ms ' + msg); draw(); };
-  window.__dbg('debug on, build 2026-10-25 03:05');
-  window.__dbg(navigator.userAgent);
-  addEventListener('error', function (e) { window.__dbg('ERROR: ' + e.message + ' (line ' + e.lineno + ':' + e.colno + ')'); });
-  addEventListener('unhandledrejection', function (e) { window.__dbg('ERROR (promise): ' + (e.reason && e.reason.message || e.reason)); });
-  document.addEventListener('DOMContentLoaded', function () { window.__dbg('page parsed'); });
-})();
-</script>
 
 <header class="mast" id="top">
   <div class="topbar">
@@ -1178,15 +1151,11 @@ h2 + h3.group { margin-top: 36px; }
   }
 
   /* ---------- the name forms from dots ---------- */
-  // reports into the ?debug panel set up at the top of the page
-  const note = msg => window.__dbg && window.__dbg(msg);
-  note('motion script running');
   const h1 = document.querySelector('.title h1');
   const line = h1 && h1.querySelector('.mask > span');
   // a reload always opens at the top, so the name animation plays instead of being skipped below the fold
   if ('scrollRestoration' in history && !location.hash) { history.scrollRestoration = 'manual'; if (scrollY > 0) scrollTo(0, 0); }
-  note(`viewport ${innerWidth}x${innerHeight} dpr ${devicePixelRatio} | reduced motion: ${reduce} | scrollY: ${Math.round(scrollY)}`);
-  if (!line || reduce || scrollY > 40) { note(`skipped: ${!line ? 'no name element' : reduce ? 'reduced motion is on' : 'page opened scrolled down'}`); return; }
+  if (!line || reduce || scrollY > 40) return;
   root.classList.add('dots');
   const show = () => root.classList.add('formed');
 
@@ -1202,8 +1171,7 @@ h2 + h3.group { margin-top: 36px; }
     ]).catch(() => false);
     // fonts.check is also true when the face is simply missing, so look for Instrument Serif itself
     const real = [...document.fonts].some(f => f.family.replace(/["']/g, '') === 'Instrument Serif' && f.status === 'loaded');
-    note(`font: loaded=${loaded} real=${real}`);
-    if (!loaded || !real) { note('skipped: display font not available'); return show(); }
+    if (!loaded || !real) return show();
     await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); // let the new face lay out
 
     // the text's baseline, read from a zero-size marker sitting on it
@@ -1233,8 +1201,7 @@ h2 + h3.group { margin-top: 36px; }
       const cx = Math.min(off.width - 1, x + (step >> 1)), cy = Math.min(off.height - 1, y + (step >> 1));
       if (px[(cy * off.width + cx) * 4 + 3] > 150) pts.push([cx, cy]);
     }
-    note(`ink ${ink}px, ${pts.length} dots, step ${step}`);
-    if (pts.length < 50) { note('skipped: too little ink sampled'); return show(); }
+    if (pts.length < 50) return show();
     const size = Math.max(1.1, step * 0.5);
 
     // the canvas covers the viewport in exact CSS pixels
@@ -1261,11 +1228,10 @@ h2 + h3.group { margin-top: 36px; }
     const t0 = performance.now(), dur = 1150;
     let done = false;
     const scroll0 = scrollY, width0 = innerWidth;
-    const onScroll = () => { if (Math.abs(scrollY - scroll0) > 80) finish('scrolled away'); };
-    const onResize = () => { if (innerWidth !== width0) finish('width changed'); };
-    const finish = why => {
+    const onScroll = () => { if (Math.abs(scrollY - scroll0) > 80) finish(); };
+    const onResize = () => { if (innerWidth !== width0) finish(); };
+    const finish = () => {
       if (done) return; done = true;
-      note(`finished: ${why || 'formed'}`);
       show();
       cv.classList.add('gone');
       setTimeout(() => cv.remove(), 600);
@@ -1274,12 +1240,11 @@ h2 + h3.group { margin-top: 36px; }
     };
     addEventListener('scroll', onScroll, { passive: true });
     addEventListener('resize', onResize);
-    note('animation started');
     const frame = now => {
       if (done) return;
       // follow the name if anything above it moved since we measured
       const r = line.getBoundingClientRect();
-      if (Math.abs(r.width - box.width) > 2) return finish('the name reflowed'); // the text itself reflowed
+      if (Math.abs(r.width - box.width) > 2) return finish(); // the text itself reflowed
       const ox = r.left, oy = r.top;
       c.clearRect(0, 0, W, H);
       c.save();
@@ -1297,7 +1262,7 @@ h2 + h3.group { margin-top: 36px; }
     };
     requestAnimationFrame(frame);
   };
-  start().catch(e => { note(`error: ${e && e.message}`); show(); });
+  start().catch(show);
 })();
 </script>
 <!--/abm-->
