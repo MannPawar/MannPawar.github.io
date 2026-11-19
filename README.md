@@ -2,7 +2,7 @@
 
 Personal site: https://mannpawar.github.io
 
-Data scientist researching behavioral AI: why players behave the way they do, and how AI can make NPCs believable.
+Machine learning researcher studying cognition: how people decide, how minds differ and how beliefs change, with games as the laboratory.
 
 A single static page (`index.html`) with its pictures in `assets/`. No build step is needed to host it. The
 "Run the Civil War" section is a JavaScript port of the agent-based model from my Skyrim opinion-dynamics paper,
