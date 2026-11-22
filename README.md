@@ -12,7 +12,7 @@ running on the 1,010 named NPCs; its data and code are inlined in `index.html`.
 
 - Wren Building and Lord Botetourt statue, c. 1905–1926, postcard by Louis Kaufman & Sons, public domain (Wikimedia Commons)
 - Rajabai Clock Tower, photo by Deepak Bhandari, Pexels licence
-- Crim Dell 2, by Jrcla2, public domain (Wikimedia Commons)
+- Harvard Medical School, Boston, Mass., postcard by Detroit Publishing Co., 1913–18, New York Public Library, public domain (Wikimedia Commons)
 - The Chess Players, Thomas Eakins, 1876, The Metropolitan Museum of Art, CC0
 - Socialist Frost addressing a street crowd, Union Sq., 1908, Bain News Service, Library of Congress, public domain
 - Portrait: Mann Pawar's own photo
