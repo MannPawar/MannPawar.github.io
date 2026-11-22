@@ -1114,23 +1114,40 @@ h2 + h3.group { margin-top: 36px; }
   if (matchMedia('(max-width: 760px)').matches) document.querySelectorAll('#work details[open]').forEach(d => d.removeAttribute('open'));
 
   /* ---------- figures count up ---------- */
-  const NUM = /\d+(?:[.,]\d+)?/g;
+  const NUM = /\d+(?:,\d{3})*(?:\.\d+)?/g;
   const countUp = el => {
     const text = el.textContent;
-    const parts = [...text.matchAll(NUM)].filter(m => { const v = parseFloat(m[0].replace(',', '')); return !(Number.isInteger(v) && v >= 1900 && v <= 2100); });
+    const parts = [...text.matchAll(NUM)].filter(m => { const v = parseFloat(m[0].replace(/,/g, '')); return !(Number.isInteger(v) && v >= 1900 && v <= 2100); });
     if (!parts.length || reduce) return;
+    // a "before → after" figure keeps the before fixed and counts the after up from it
+    const arrow = text.indexOf('→');
+    const before = arrow < 0 ? [] : parts.filter(m => m.index < arrow);
+    const moving = arrow < 0 ? parts : parts.filter(m => m.index > arrow);
+    if (!moving.length) return;
+    // each moving number gets a fixed box at its final width, so proportional digits don't shove the line around
+    el.textContent = '';
+    let last = 0;
+    const slots = moving.map((m, i) => {
+      el.append(text.slice(last, m.index));
+      const s = document.createElement('span');
+      s.textContent = m[0];
+      s.style.cssText = 'display:inline-block;text-align:right';
+      el.append(s);
+      last = m.index + m[0].length;
+      const raw = m[0], dec = (raw.split('.')[1] || '').length, to = parseFloat(raw.replace(/,/g, ''));
+      const from = before[i] ? parseFloat(before[i][0].replace(/,/g, '')) : 0;
+      return { s, raw, dec, to, from, comma: raw.includes(',') };
+    });
+    el.append(text.slice(last));
+    slots.forEach(o => { o.s.style.width = o.s.getBoundingClientRect().width + 'px'; });
+    const fmt = (v, o) => o.comma ? v.toLocaleString('en-US', { minimumFractionDigits: o.dec, maximumFractionDigits: o.dec }) : v.toFixed(o.dec);
     const t0 = performance.now(), dur = 1300;
     const frame = now => {
       const k = easeOut(Math.min(1, (now - t0) / dur));
-      let out = '', last = 0;
-      for (const m of parts) {
-        const raw = m[0], dec = (raw.split('.')[1] || '').length, v = parseFloat(raw.replace(',', ''));
-        out += text.slice(last, m.index) + (v * k).toFixed(dec);
-        last = m.index + raw.length;
-      }
-      el.textContent = out + text.slice(last);
+      for (const o of slots) o.s.textContent = k < 1 ? fmt(o.from + (o.to - o.from) * k, o) : o.raw;
       if (k < 1) requestAnimationFrame(frame); else el.textContent = text;
     };
+    slots.forEach(o => { o.s.textContent = fmt(o.from, o); });
     requestAnimationFrame(frame);
   };
   onView([...document.querySelectorAll('.intro .facts b, .entry .side .fig, .figure .big')], countUp);
