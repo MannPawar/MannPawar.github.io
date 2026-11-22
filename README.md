@@ -14,7 +14,7 @@ running on the 1,010 named NPCs; its data and code are inlined in `index.html`.
 - Rajabai Clock Tower, photo by Deepak Bhandari, Pexels licence
 - Harvard Medical School, Boston, Mass., postcard by Detroit Publishing Co., 1913–18, New York Public Library, public domain (Wikimedia Commons)
 - The Chess Players, Thomas Eakins, 1876, The Metropolitan Museum of Art, CC0
-- Purkinje neurons, drawing by Santiago Ramón y Cajal, 1899, Instituto Cajal, public domain (Wikimedia Commons)
+- Psychopathic Hospital staff, Boston, from L. Vernon Briggs, History of the Psychopathic Hospital, 1922, public domain (Wikimedia Commons)
 - Portrait: Mann Pawar's own photo
 
 All archival pictures are shown in greyscale.
