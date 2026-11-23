@@ -483,6 +483,7 @@ h2 + h3.group { margin-top: 36px; }
       <h2 id="gcs-h" class="rise">Try Grant Central Station</h2>
       <p class="how rise" style="--i:1">The prototype from my Pre-ICIS SIGDSA 2026 paper, running live. Give it a funding goal and it searches broadly, then ranks what it finds against the organization’s mission and programs.</p>
       <ol class="gcs-steps rise" style="--i:2">
+        <li><span><b>Connect.</b> Add your own API key for a language model in the app’s sidebar. Searching needs one.</span></li>
         <li><span><b>Discover.</b> Describe the funding goal, pick the countries, and add any funder sites of your own to the default sources.</span></li>
         <li><span><b>Re-rank.</b> Grants found by earlier runs are re-ranked against the new goal and merged in, so each search builds on the last.</span></li>
         <li><span><b>Propose.</b> Select a grant and generate a writeup in the proposal workspace.</span></li>
@@ -493,7 +494,7 @@ h2 + h3.group { margin-top: 36px; }
     </div>
     <div class="main rise" style="--i:1">
       <iframe class="gcs-frame" src="https://grantcentralstation.streamlit.app/?embed=true" title="Grant Central Station, the live prototype" loading="lazy" allow="clipboard-write"></iframe>
-      <p class="note">Running on Streamlit Community Cloud. If nobody has used it for a while, the app sleeps; wake it from the frame above and give it a minute.</p>
+      <p class="note">You can look around without a key, but searches run on a language model, so they need your own API key. The app runs on Streamlit Community Cloud. If nobody has used it for a while, it sleeps; wake it from the frame above and give it a minute.</p>
     </div>
   </div>
 </section>
