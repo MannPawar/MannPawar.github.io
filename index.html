@@ -144,10 +144,13 @@ p { margin: 0; }
 @media (hover: hover) and (pointer: fine) { .field .btn:hover { background: #ffffff; } }
 .field .btn.ghost { background: var(--field-2); color: var(--field-ink); }
 @media (hover: hover) and (pointer: fine) { .field .btn.ghost:hover { background: #520609; } }
-.field canvas { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; background: var(--field-2); cursor: crosshair; touch-action: manipulation; }
 .field .note { margin-top: 20px; font-size: var(--step-small); max-width: 60ch; }
-.field canvas#war-map { aspect-ratio: 10 / 7; background: var(--bg); cursor: default; }
-.field canvas#war-hist { aspect-ratio: 50 / 11; background: var(--bg); margin-top: 6px; cursor: default; }
+.field a.btn { display: inline-flex; align-items: center; text-decoration: none; }
+.gcs-steps { margin: 28px 0 0; padding: 0; list-style: none; counter-reset: s; max-width: 34ch; }
+.gcs-steps li { counter-increment: s; display: grid; grid-template-columns: 2em 1fr; padding-block: 12px; border-top: 1px solid color-mix(in srgb, var(--field-ink) 35%, transparent); }
+.gcs-steps li::before { content: counter(s); font-family: var(--display); font-size: 1.4em; line-height: 1; }
+.gcs-frame { display: block; width: 100%; height: 760px; border: 0; background: var(--bg); }
+@media (max-width: 760px) { .gcs-frame { height: 620px; } }
 .seg { border: 0; margin: 28px 0 0; padding: 0; min-width: 0; }
 .seg legend { padding: 0; font-size: var(--step-small); margin-bottom: 8px; }
 .seg label { display: inline-flex; cursor: pointer; }
@@ -157,13 +160,6 @@ p { margin: 0; }
 .seg input:checked + span { background: var(--field-ink); color: var(--field); }
 .seg input:focus-visible + span { outline: 3px solid var(--field-ink); outline-offset: 3px; }
 @media (hover: hover) and (pointer: fine) { .seg input:not(:checked) + span:hover { background: #520609; } }
-.war-stats { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 8px 32px; margin: 32px 0 0; }
-.war-stats div { display: flex; flex-direction: column-reverse; }
-.war-stats dt { font-size: var(--step-small); margin-top: 6px; }
-.war-stats dd { margin: 0; font-family: var(--display); font-size: var(--step-head); line-height: 0.95; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.war-event { margin-top: 16px; font-weight: 600; min-height: 1.5em; }
-.war-who { margin-top: 10px; font-size: var(--step-small); min-height: 1.5em; }
-.war-axis { display: flex; justify-content: space-between; font-size: var(--step-small); margin-top: 8px; }
 
 /* ---------- work ---------- */
 .figure { margin: 0; }
@@ -443,7 +439,7 @@ h2 + h3.group { margin-top: 36px; }
       <div class="main">
         <h3>NPC Opinion Dynamics</h3>
         <p class="kind">Agent-based model of belief change in a game world</p>
-        <p class="detail">An opinion model of 1,010 Skyrim NPCs (<a href="#civil-war">run it below</a>): each character's stance on the civil war moves with the people around them, their home hold and the battles, and the model was run 101,000 times and validated against an energy-matched null with Kolmogorov–Smirnov tests.</p>
+        <p class="detail">An opinion model of 1,010 Skyrim NPCs: each character's stance on the civil war moves with the people around them, their home hold and the battles, and the model was run 101,000 times and validated against an energy-matched null with Kolmogorov–Smirnov tests.</p>
       </div>
       <div class="side"><p class="fig">101,000</p><p>simulation runs, tested against a random-drift null</p></div>
     </article>
@@ -473,7 +469,7 @@ h2 + h3.group { margin-top: 36px; }
       <div class="main">
         <h3>Grant Central Station</h3>
         <p class="kind">Grant discovery and proposal app · first author, with Rachel Chung (Carnegie Mellon University) and Pooja Muthuraj (Harvard University)</p>
-        <p class="detail">It grew out of a grant-writing pipeline I built in spring 2026. The app makes that pipeline customizable for any organization looking for funding.</p>
+        <p class="detail">It grew out of a grant-writing pipeline I built in spring 2026. The app makes that pipeline customizable for any organization looking for funding (<a href="#grant-central">try it below</a>).</p>
       </div>
       <div class="side"><p class="fig">Accepted</p><p>Pre-ICIS SIGDSA 2026, Prototype Track</p></div>
     </article>
@@ -481,39 +477,23 @@ h2 + h3.group { margin-top: 36px; }
 </section>
 
 <!--war-->
-<section class="field" id="civil-war" aria-labelledby="war-h">
+<section class="field" id="grant-central" aria-labelledby="gcs-h">
   <div class="page">
     <div class="side">
-      <h2 id="war-h" class="rise">Run the Civil War</h2>
-      <p class="how rise" style="--i:1">The model from my paper, running live on all 1,010 named NPCs in Skyrim, with the same rules and parameters as the R code. Choose who wins the war, then watch 150 steps of conversation and four battles settle the population into camps.</p>
-      <fieldset class="seg rise" style="--i:2">
-        <legend>Who wins</legend>
-        <label><input type="radio" name="sc" value="Imperial" checked><span>Empire</span></label>
-        <label><input type="radio" name="sc" value="Stormcloak"><span>Stormcloaks</span></label>
-      </fieldset>
-      <fieldset class="seg rise" style="--i:2">
-        <legend>How opinions move</legend>
-        <label><input type="radio" name="model" value="structured" checked><span>Social rules</span></label>
-        <label><input type="radio" name="model" value="null"><span>Random drift</span></label>
-      </fieldset>
+      <h2 id="gcs-h" class="rise">Try Grant Central Station</h2>
+      <p class="how rise" style="--i:1">The prototype from my Pre-ICIS SIGDSA 2026 paper, running live. Give it a funding goal and it searches broadly, then ranks what it finds against the organization’s mission and programs.</p>
+      <ol class="gcs-steps rise" style="--i:2">
+        <li><span><b>Discover.</b> Describe the funding goal, pick the countries, and add any funder sites of your own to the default sources.</span></li>
+        <li><span><b>Re-rank.</b> Grants found by earlier runs are re-ranked against the new goal and merged in, so each search builds on the last.</span></li>
+        <li><span><b>Propose.</b> Select a grant and generate a writeup in the proposal workspace.</span></li>
+      </ol>
       <div class="sim-btns rise" style="--i:3">
-        <button class="btn" type="button" id="war-run">Run the war</button>
-        <button class="btn ghost" type="button" id="war-reset">Reset</button>
+        <a class="btn" href="https://grantcentralstation.streamlit.app/" target="_blank" rel="noopener">Open the app</a>
       </div>
-      <dl class="war-stats rise" style="--i:3" aria-live="polite">
-        <div><dt>Step</dt><dd id="war-t">0 of 150</dd></div>
-        <div><dt>Mean lean</dt><dd id="war-mean">0.50</dd></div>
-        <div><dt>Undecided</dt><dd id="war-neu">0%</dd></div>
-      </dl>
-      <p class="war-event" id="war-event">Before the first battle</p>
     </div>
     <div class="main rise" style="--i:1">
-      <canvas id="war-map" width="1000" height="700" aria-label="Map of Skyrim's holds with one dot per NPC, coloured from Imperial red to Stormcloak blue by their current opinion."></canvas>
-      <p class="war-who" id="war-who">Point at any dot to see who it is.</p>
-      <canvas id="war-hist" width="1000" height="220" aria-label="Histogram of all 1,010 opinions from Imperial at the left to Stormcloak at the right."></canvas>
-      <div class="war-axis"><span>Imperial</span><span>Undecided</span><span>Stormcloak</span></div>
-      <p class="note">“Random drift” is the paper’s energy-matched null: the same battles and the same amount of change each step, with the social rules replaced by noise. With the rules, the population splits into two camps and almost nobody stays undecided; without them, about one in five does.</p>
-      <noscript><p class="note">This demo needs JavaScript.</p></noscript>
+      <iframe class="gcs-frame" src="https://grantcentralstation.streamlit.app/?embed=true" title="Grant Central Station, the live prototype" loading="lazy" allow="clipboard-write"></iframe>
+      <p class="note">Running on Streamlit Community Cloud. If nobody has used it for a while, the app sleeps; wake it from the frame above and give it a minute.</p>
     </div>
   </div>
 </section>
@@ -671,7 +651,7 @@ h2 + h3.group { margin-top: 36px; }
 <footer>
   <div class="fcols">
     <div><p>Mann Pawar</p><p>Machine learning researcher<br>Research Student, BIDMC</p></div>
-    <div><p>Sections</p><a href="#research">Research</a><br><a href="#civil-war">Civil War model</a><br><a href="#work">Work</a><br><a href="#about">About</a><br><a href="#contact">Contact</a></div>
+    <div><p>Sections</p><a href="#research">Research</a><br><a href="#grant-central">Grant Central Station</a><br><a href="#work">Work</a><br><a href="#about">About</a><br><a href="#contact">Contact</a></div>
     <div><p>Elsewhere</p><a href="https://www.linkedin.com/in/mann-pawar/" rel="noopener">LinkedIn</a><br><a href="https://github.com/MannPawar" rel="noopener">GitHub</a><br><a href="mailto:mannspawar1@gmail.com">Email</a></div>
     <div class="credit"><p>Pictures</p><a href="https://commons.wikimedia.org/wiki/File:Wren_Building_and_Lord_Botetourt_statue,_c._1905%E2%80%941926.jpg">Wren Building postcard</a>, Louis Kaufman &amp; Sons, public domain · <a href="https://www.pexels.com/photo/9054612/">Rajabai Clock Tower</a> by Deepak Bhandari, Pexels licence · <a href="https://commons.wikimedia.org/wiki/File:Harvard_Medical_School,_Boston,_Mass_(NYPL_b12647398-74267).tiff">Harvard Medical School postcard</a>, Detroit Publishing Co., public domain · <a href="https://www.metmuseum.org/art/collection/search/10813"><i>The Chess Players</i></a>, Thomas Eakins, 1876, The Met, CC0 · <a href="https://commons.wikimedia.org/wiki/File:Psychopathic_Hospital_Staff,_Boston.jpg">Psychopathic Hospital staff, Boston</a>, from L. Vernon Briggs, <i>History of the Psychopathic Hospital</i>, 1922, public domain · all shown in greyscale</div>
   </div>
@@ -694,425 +674,6 @@ h2 + h3.group { margin-top: 36px; }
 })();
 </script>
 <!--abm-->
-<script type="application/json" id="abm-roster">{"home":["Dawnstar","","Falkreath","Markarth","Morthal","Raven Rock","Raven Rock, Tel Mithryn","Riften","Solitude","Tel Mithryn","Whiterun","Windhelm","Solitude then Windhelm","Winterhold","Dragon Bridge","Helgen","Riverwood","Ivarstead","Riften (After his quest)","Karthwasten","Rorikstead","Shor's Stone","Skaal Village","Temple of Miraak, Skaal Village","Dushnikh Yal","Largashbur","Mor Khazgur","Narzulbur","Darkwater Crossing","any city captured by the Stormcloaks","Kynesgrove","Stonehills","Corinthe"],"race":["Nord","Breton","Imperial","Redguard","Elder","Dark Elf","High Elf","Argonian","Orc","Animals","Undead","Wood Elf","Khajiit","Radiant","Dremora","Snow Elf"],"cls":["Miner","Warrior","Assassin","Apothecary","Child","Blacksmith","Destruction Mage","Rogue","Ranger","Citizen","Soldier","Priest","Bard","Food Vendor","Vigilant","Farmer","Penitus Oculatus","Bandit Archer","Lumberjack","Monk","Pawnbroker","Fire/Frost/Shock Mage","Bandit","Orc Warrior","Witchblade","Thief","Nightblade","Indeterminate","Barbarian","Conjurer","(?)","Beggar","Scout","Vampire","Mystic","Sorcerer","Spellsword","Dremora Class","Fletcher","Imperial Soldier","Prisoner","Tailor","Enchanter","Guard","Spell Vendor","Blade","Frea Combat Style","Forsworn Shaman","Bandit Wizard","Radiant","Haknir Death-Brand","DLC2Ralis","Miraak","Vyrthur","Werewolf","Thalmor Wizard","Nord Hero","Thalmor Warrior","Forsworn","EbonyWarrior Class","Katria"],"agents":[["Beitild",0,0,0],["Brina Merilis",0,0,1],["Horik Halfhand",0,0,1],["Dawnstar Guard",1,0,1],["Babette",1,1,2],["Cicero",1,2,2],["Dark Brotherhood Initiate",1,0,2],["Nazir",1,3,2],["Fruki",0,0,0],["Irgnir",0,0,0],["Bodil",0,0,0],["Gjak",0,0,0],["Karl",0,0,0],["Leigelf",0,0,0],["Frida",0,4,3],["Alesan",0,3,4],["Harlaug",0,0,1],["Irine",0,5,0],["Rustleif",0,0,5],["Seren",0,3,5],["Silus Vesuius",0,2,6],["Captain Wayfinder",0,0,7],["Guthrum",0,0,8],["Ravam Verethi",0,5,7],["Bulfrek",0,0,9],["Frorkmar Banner-Torn",0,0,10],["Gregor",0,0,1],["Skald",0,4,1],["Jod",0,0,1],["Madena",0,1,6],["Abelone",0,0,9],["Alding",0,0,1],["Erandur",0,5,11],["Gjuk",0,0,1],["Irlof",0,0,1],["Karita",0,0,12],["Stig Salt-Plank",0,0,1],["Thoring",0,0,13],["Vereth",0,6,0],["Borgny",0,0,0],["Edith",0,0,0],["Fenrik",0,0,14],["Harald",0,0,0],["Lond",0,0,0],["Indara Caerellia",2,2,1],["Mathies",2,0,15],["Arcturus",1,2,16],["Arnbjorn",1,0,2],["Astrid",1,0,2],["Festus Krex",1,4,6],["Gabriella",1,5,2],["Veezara",1,7,2],["Delacourt",2,1,7],["Narri",2,0,9],["Valdr",2,0,17],["Valga Vinicia",2,2,13],["Dengeir of Stuhn",2,0,1],["Tekla",2,0,9],["Thadgeir",2,0,1],["Falkreath Guard",1,0,1],["Sinding",1,0,1],["Zaria",2,3,1],["Bolund",2,0,1],["Solaf",2,0,18],["Kust",2,0,19],["Runil",2,6,11],["Helvard",2,0,1],["Siddgeir",2,0,20],["Legate Skulnar",2,0,10],["Nenya",2,6,21],["Rayya",2,3,1],["Lod",2,0,5],["Imedhnain",3,1,13],["Lisbet",3,0,13],["Captain Aquilius",3,3,22],["Borkul the Beast",3,8,23],["Braig",3,1,24],["Duach",3,1,24],["Grisvar the Unlucky",3,0,25],["Madanach",3,1,24],["Odvan",3,1,24],["Uraccen",3,1,24],["Adara",3,3,4],["Endon",3,3,9],["Kerah",3,3,20],["Markarth City Guard",1,0,10],["Bothela",3,1,3],["Muiri",3,1,3],["Brother Verulus",3,2,11],["Eola",1,1,26],["Daighre",1,1,0],["Erith",1,1,4],["Torom",1,9,27],["Adeber",1,1,0],["Ennoc",1,1,0],["Willem",1,1,0],["Gat gro-Shargakh",1,8,0],["Pavo Attius",1,2,0],["Skaggi Scar-Face",1,0,0],["Sosia Tremellia",1,2,0],["Kaie",1,1,26],["Banning",3,1,8],["Cedran",3,1,12],["Kibell",3,0,1],["Vigilance",3,9,27],["Morven",3,1,24],["Nepos the Nose",3,4,26],["Tynan",3,1,24],["Uaile",3,1,24],["Ogmund",3,0,12],["Weylin",3,1,24],["Rogatus Salvius",3,4,15],["Vigdis Salvius",3,4,15],["Frabbi",3,0,13],["Hogni Red-Arm",3,0,13],["Hreinn",3,0,9],["Hroki",3,0,4],["Kleppr",3,0,13],["Margret",1,0,9],["Vigilant Tyranus",3,2,24],["Vorstag",3,0,1],["Mulush gro-Shugurz",3,8,1],["Urzoga gra-Shugurz",3,8,23],["Anwen",3,3,11],["Fjotra",1,0,4],["Hamal",3,0,11],["Orla",3,0,11],["Senna",3,1,11],["Betrid Silver-Blood",3,0,9],["Donnel",3,4,24],["Nana Ildene",3,1,24],["Reburrus Quintilius",3,2,9],["Rhiada",3,1,9],["Thonar Silver-Blood",3,0,1],["Thongvor Silver-Blood",3,0,1],["Yngvar the Singer",3,0,28],["Aicantar",3,6,29],["Anton Virane",3,1,9],["Calcelmo",3,6,29],["Faleen",3,3,1],["Ghorza gra-Bagol",3,8,5],["Igmund",3,0,28],["Legate Emmanuel Admand",3,1,10],["Moth gro-Bagol",3,8,5],["Ondolemar",1,6,6],["Raerek",3,4,9],["Rondach",3,1,9],["Tacitus Sallustius",3,2,5],["Thalmor",1,6,30],["Voada",3,1,9],["Argis the Bulwark",3,0,1],["Cairine",3,1,9],["Cosnach",3,1,1],["Degaine",3,1,31],["Dryston",3,1,28],["Eltrys",3,1,9],["Garvey",3,1,32],["Hathrasil",3,1,9],["Omluag",3,1,9],["Alva",4,0,33],["Hroggar",4,0,18],["Agni",4,0,4],["Falion",4,3,29],["Benor",4,0,1],["Morthal Guard",4,0,1],["Aslfur",4,0,8],["Gorm",4,0,1],["Idgrod Ravencrone",4,4,34],["Idgrod the Younger",4,0,35],["Joric",4,0,4],["Legate Taurinus Duilis",4,2,10],["Valdimar",4,0,35],["Jorgen",4,0,18],["Lami",4,0,3],["Jonna",4,3,5],["Lurbuk",4,8,12],["Thonnir",4,0,18],["Virkmund",4,0,4],["Bralsa Drel",5,5,0],["Rirns Llervu",5,5,31],["Dreyla Alor",5,5,15],["Fethis Alor",5,5,15],["Captain Veleth",5,5,1],["Redoran Guard",5,5,10],["Aphia Velothi",5,5,11],["Crescius Caerellius",5,4,0],["Glover Mallory",5,1,25],["Garyn Ienth",5,5,15],["Milore Ienth",5,5,3],["Adril Arano",5,5,1],["Cindiri Arano",5,5,15],["Lleril Morvayn",5,5,1],["Evul Seloth",5,5,0],["Gratian Caerellius",5,10,27],["Meden Maren",5,5,0],["Millius",5,10,27],["Naris Mavani",5,5,0],["Tolenos Omoren",5,5,0],["Drovas Relvi",6,5,15],["Geldis Sadri",5,5,20],["Mogrul",5,8,1],["Slitter",1,5,22],["Teldryn Sero",5,5,36],["Mirri Severin",5,5,22],["Tilisu Severin",5,5,22],["Vendil Severin",5,5,37],["Elder Othreloth",5,5,29],["Galdrus Hlervu",5,5,6],["Aerin",7,2,1],["Mjoll the Lioness",7,0,1],["Keerava",7,7,13],["Louis Letrush",7,1,12],["Marcurio",7,2,6],["Talen-Jei",7,7,13],["Edda",7,2,31],["Madesi",7,7,20],["Snilf",7,0,31],["Hemming Black-Briar",7,0,1],["Ingun Black-Briar",7,0,2],["Maul",7,0,25],["Maven Black-Briar",7,0,26],["Indaryn",7,5,1],["Bolli",7,0,9],["Nivenor",7,11,9],["Elgrim",7,4,3],["Hafjorg",7,4,3],["Brand-Shei",7,5,20],["From-Deepest-Fathoms",7,7,9],["Grelka",7,0,5],["Haelga",7,0,9],["Niluva Hlaalu",7,5,9],["Svana Far-Shield",7,0,13],["Tythis Ulen",7,5,9],["Ungrien",7,11,13],["Wujeeta",7,7,9],["Alessandra",7,2,11],["Iona",7,0,1],["Constance Michel",7,2,9],["Francois Beaufort",7,2,4],["Grelod the Kind",7,4,18],["Hroar",7,0,4],["Runa Fair-Shield",7,0,4],["Samuel",7,2,4],["Marise Aravel",7,5,13],["Dravin Llanith",7,5,15],["Synda Llanith",1,5,15],["Anuriel",7,11,19],["Harrald",7,0,1],["Laila Law-Giver",7,0,9],["Saerlund",7,0,9],["Unmid Snow-Shod",7,0,1],["Wylandriah",7,11,21],["Shavari",7,12,21],["Bersi Honey-Hand",7,0,25],["Drifa",7,0,20],["Brynjolf",7,0,25],["Delvin Mallory",7,1,25],["Dirge",7,2,13],["Galathil",7,11,13],["Sapphire",7,0,25],["Tonilia",7,3,20],["Vekel the Man",7,0,13],["Vex",7,2,25],["Drahff",7,0,17],["Esbern",1,4,29],["Gian the Fist",7,2,25],["Hefid the Deaf",7,0,31],["Hewnon Black-Skeever",7,0,1],["Knjakr",7,4,28],["Salvianus",7,2,28],["Snippy",1,9,27],["Swims-In-Deep-Water",7,7,9],["Viriya",7,3,9],["Molgrom Twice-Killed",7,0,25],["Sibbi Black-Briar",7,0,25],["Threki the Innocent",1,0,25],["Hofgrir Horse-Crusher",7,0,1],["Shadr",7,3,15],["Sigaar",7,0,1],["Orini Dral",7,5,22],["Sarthis Idren",7,5,22],["Romlyn Dreth",7,5,25],["Asbjorn Fire-Tamer",7,0,5],["Balimund",7,0,5],["Addvild",1,0,15],["Leonara Arius",1,2,15],["Asgeir Snow-Shod",7,0,1],["Nura Snow-Shod",7,0,11],["Vulwulf Snow-Shod",7,0,1],["Briehl",7,0,1],["Dinya Balu",7,5,11],["Maramal",7,3,11],["Arnskar Ember-Master",7,0,5],["Cynric Endell",7,1,25],["Etienne Rarnis",7,1,7],["Garthar",7,0,25],["Herluin Lothaire",7,1,3],["Mercer Frey",7,1,7],["Niruin",7,11,25],["Ravyn Imyan",7,5,25],["Rune",1,2,25],["Syndus",7,11,38],["Thrynn",7,0,25],["Vanryth Gatharian",7,5,5],["Vipir the Fleet",7,0,25],["Valindor",7,11,1],["Addvar",8,0,13],["Greta",8,0,9],["Svari",8,0,4],["Angeline Morrard",8,1,3],["Vivienne Onis",8,1,3],["Aia Arria",8,2,12],["Ataf",8,3,12],["Bendt",8,4,9],["Giraud Gemane",8,1,25],["Illdi",8,0,12],["Inge Six Fingers",8,4,12],["Jorn",8,0,12],["Pantea Ateia",8,2,12],["Viarmo",8,6,12],["Kayd",8,3,4],["Sayma",8,3,20],["Bolgeir Bearclaw",8,0,1],["Elisif the Fair",8,0,9],["Erdi",8,0,9],["Falk Firebeard",8,0,1],["Odar",8,0,9],["Sybille Stentor",8,1,6],["Una",8,0,9],["Bryling",8,0,1],["Irnskar Ironhand",8,0,1],["Captain Aldis",8,0,39],["Emperor Titus Mede II",8,2,2],["General Tullius",8,2,39],["Gianna",8,2,18],["Legate Adventus Caesennius",8,2,10],["Legate Rikke",8,0,39],["Solitude Guard",8,0,1],["Bjartur",8,0,40],["East Empire Dockmaster",8,2,9],["East Empire Dockworker",1,1,1],["East Empire Warden",8,13,22],["Snorreid",8,0,1],["Erikur",8,0,1],["Gisli",8,0,8],["Melaran",8,6,21],["Evette San",8,0,13],["Octieve San",8,1,9],["Fihada",8,3,38],["Jawanan",8,3,38],["Styrr",8,4,11],["Ahtar",8,3,1],["Jala",8,0,13],["Blaise",8,1,4],["Katla",8,0,15],["Knud",8,0,4],["Snilling",8,0,15],["Deeja",8,7,2],["Dervenin",1,11,31],["Jaree-Ra",1,7,7],["Jolf",1,0,1],["Noster Eagle-Eye",8,2,31],["Roggvir",8,0,1],["Jordis the Sword-Maiden",8,0,1],["Endarie",8,6,41],["Taarie",8,6,41],["Dorian",8,1,25],["Eris",8,0,24],["Sabine Nytte",8,1,1],["Safia",8,2,26],["Xander",8,2,26],["Beirand",8,0,5],["Heimvar",8,0,5],["Hjorunn",8,0,18],["Kharag gro-Shurkul",8,8,18],["Thoron",1,1,29],["Fridrika",8,0,9],["Geimund",8,0,9],["Horm",8,0,9],["Thaer",8,0,1],["Freir",8,0,11],["Rorlund",8,0,11],["Silana Petreia",8,2,11],["Belrand",8,0,36],["Corpulus Vinius",8,2,13],["Gulum-Ei",8,7,26],["Lisette",8,1,12],["Minette Vinius",8,0,4],["Sorex Vinius",8,2,13],["Alexia Vici",1,2,9],["Aquillius Aeresius",8,2,9],["Vittoria Vici",8,2,9],["Neloth",9,5,42],["Talvas Fathryon",9,5,29],["Elynea Mothren",9,5,3],["Ulves Romoran",9,5,15],["Varona Nelas",9,5,15],["Amren",10,3,1],["Braith",10,3,4],["Saffir",10,3,20],["Arcadia",10,2,3],["Hulda",10,0,20],["Mikael",10,0,9],["Saadia",10,3,13],["Sinmir",10,0,39],["Gwendolyn",10,0,15],["Brenuin",10,3,31],["Lucia",10,2,4],["Belethor",10,1,20],["Sigurd",10,0,13],["Lydia",10,0,1],["Carlotta Valentia",10,2,13],["Mila Valentia",10,2,4],["Wilmuth",10,0,21],["Balgruuf the Greater",10,0,1],["Dagny",10,0,4],["Farengar Secret-Fire",10,0,21],["Fianna",10,1,13],["Frothar",10,0,4],["Gerda",10,0,13],["Hjornskar Head-Smasher",10,0,10],["Hrongar",10,0,1],["Irileth",10,5,26],["Legate Quentin Cipius",10,2,10],["Nelkir",10,0,4],["Proventus Avenicci",10,2,9],["Ahlam",10,3,11],["Anoriath",10,11,32],["Elrindir",10,11,38],["Jenassa",10,5,8],["Nazeem",10,3,9],["Commander Caius",10,2,39],["Whiterun Guard",10,0,43],["Andurs",10,0,11],["Heimskr",10,0,11],["Eimar",10,0,1],["Mallus Maccius",10,2,9],["Sabjorn",10,0,9],["Avulstein Gray-Mane",10,0,1],["Eorlund Gray-Mane",10,0,5],["Fralia Gray-Mane",10,4,20],["Olfina Gray-Mane",10,0,13],["Alfhild Battle-Born",10,0,15],["Bergritte Battle-Born",10,4,1],["Idolaf Battle-Born",10,0,1],["Jon Battle-Born",10,0,9],["Lars Battle-Born",10,0,9],["Olfrid Battle-Born",10,0,1],["Aela the Huntress",10,0,25],["Athis",10,5,1],["Brill",10,0,9],["Farkas",10,0,5],["Kodlak Whitemane",10,0,1],["Njada Stonearm",10,0,1],["Ria",10,2,1],["Skjor",10,0,1],["Tilma the Haggard",10,4,9],["Torvar",10,0,1],["Vignar Gray-Mane",10,4,1],["Vilkas",10,0,1],["Olava the Feeble",10,4,9],["Gloth",10,0,15],["Nimriel",10,11,15],["Severio Pelagia",10,2,15],["Acolyte Jenssen",10,0,11],["Danica Pure-Spring",10,0,11],["Maurice Jondrelle",10,1,19],["Uthgerd the Unbroken",10,0,1],["Adrianne Avenicci",10,2,5],["Ulfberth War-Bear",10,0,5],["Bjorlam",10,0,1],["Jervar",10,0,1],["Lillith Maiden-Loom",10,4,32],["Skulvar Sable-Hilt",10,0,1],["Ysolda",10,0,9],["Aventus Aretino",11,0,4],["Neetrenaza",11,7,32],["Scouts-Many-Marshes",11,7,5],["Shahvee",11,7,9],["Stands-In-Shallows",11,7,7],["Aval Atheron",11,5,20],["Faryl Atheron",11,5,15],["Suvaris Atheron",11,5,9],["Belyn Hlaalu",11,5,15],["Hermir Strong-Heart",11,0,5],["Oengul War-Anvil",11,0,5],["Bolfrida Brandy-Mug",11,0,15],["Brunwulf Free-Winter",11,0,1],["Calixto Corrium",11,2,7],["Adonato Leotelli",11,2,12],["Captain Lonely-Gale",11,0,1],["Elda Early-Dawn",11,0,13],["Luaffyn",11,5,7],["Nils",11,4,9],["Rolff Stone-Fist",11,0,1],["Stenvar",11,0,1],["Susanna the Wicked",11,0,7],["Adelaisa Vendicci",11,2,9],["Orthus Endario",11,2,9],["Calder",11,0,1],["Helgird",11,4,11],["Adisla",11,0,15],["Tulvur",11,0,15],["Tiber",11,9,27],["Ysgramor",11,9,27],["Grimvar Cruel-Sea",11,0,4],["Hillevi Cruel-Sea",11,0,15],["Idesa Sadri",11,5,9],["Torsten Cruel-Sea",11,0,15],["Nilsine Shatter-Shield",11,0,9],["Torbjorn Shatter-Shield",11,0,1],["Tova Shatter-Shield",11,0,9],["Ambarys Rendar",11,5,13],["Brelas",1,11,20],["Malborn",12,11,9],["Malthyr Elenil",11,5,20],["Niranye",11,6,25],["Dalan Merchad",11,1,1],["Kjar",11,0,8],["Voldsea Giryon",11,5,7],["Gjalund Salt-Sage (Skyrim)",1,0,37],["Lygrleid (Skyrim)",1,0,37],["Sogrlaf (Skyrim)",1,0,37],["Angrenor Once-Honored",11,0,31],["Gort",11,0,1],["J'datharr",1,12,2],["Silda the Unseen",11,0,25],["Sofie",11,0,4],["Galmar Stone-Fist",11,0,1],["Jorleif",11,0,9],["Sifnar Ironkettle",11,4,1],["Ulfric Stormcloak",11,0,1],["Windhelm Guard",1,0,1],["Wuunferth the Unliving",11,4,35],["Yrsarald Thrice-Pierced",11,0,10],["Revyn Sadri",11,5,1],["Jora",11,0,11],["Lortheim",11,0,11],["Viola Giordano",11,2,9],["Nurelion",11,6,21],["Quintus Navale",11,2,35],["Alfarinn",11,0,1],["Arivanya",11,6,12],["Ulundil",11,6,8],["Birna",13,0,20],["Ranmir",13,0,9],["Ancano",13,6,21],["Gelebros",1,11,35],["Quaranir",1,6,35],["Savos Aren",13,5,29],["Tandil",1,6,35],["Urag gro-Shub",13,8,32],["Arniel Gane",13,1,29],["Brelyna Maryon",13,5,34],["Enthir",13,11,35],["J'zargo",13,12,35],["Mirabelle Ervine",13,1,21],["Nirya",13,6,35],["Onmund",13,0,35],["Tolfdir",13,4,44],["Colette Marence",13,1,19],["Drevis Neloren",13,5,35],["Faralda",13,6,35],["Phinis Gestor",13,1,29],["Sergius Turrianus",13,2,44],["Dagur",13,0,13],["Eirid",13,0,4],["Haran",13,0,13],["Nelacar",13,6,35],["Assur",13,0,4],["Kai Wet-Pommel",13,0,10],["Korir",13,0,9],["Malur Seloth",13,5,24],["Thaena",13,0,9],["Winterhold Guard",1,0,1],["Kraldar",13,0,9],["Thonjolf",13,0,9],["Augur of Dunlain",1,1,1],["Velehk Sain",1,14,1],["Azzada Lylvieve",14,3,15],["Clinton Lylvieve",14,1,4],["Julienne Lylvieve",14,1,1],["Michel Lylvieve",14,1,15],["Aldepius",14,2,10],["Faida",14,0,13],["Varnius Junius",14,2,15],["Horgeir",14,0,18],["Lodvar",14,0,18],["Olda",14,0,18],["Commander Maro",14,2,1],["Gaius Maro",14,2,1],["Penitus Oculatus Agent",1,2,16],["Gunnar Stone-Eye",15,4,0],["Haming",1,0,1],["Ingrid",15,0,13],["Matlara",15,0,1],["Torolf",15,0,18],["Vilod",15,0,1],["Elenwen",1,6,35],["Hadvar",16,0,1],["Headsman",1,2,43],["Imperial Captain",15,2,1],["Priestess of Arkay",15,2,11],["Gunjar",1,0,43],["Lokir",1,0,40],["Ralof",16,0,28],["Boti",17,0,15],["Fastred",17,0,15],["Jofthor",17,0,15],["Klimmek",17,0,9],["Bassianus Axius",18,0,9],["Gwilin",17,11,9],["Lynly Star-Sung",17,0,15],["Temba Wide-Arm",17,0,9],["Wilhelm",17,0,13],["Barknar",17,0,8],["Ivarstead Guard",17,0,10],["Narfi",17,0,31],["Enmon",19,1,0],["Mena",19,1,9],["Ainethach",19,1,0],["Belchimac",19,1,0],["Lash gra-Dushnikh",19,8,0],["Ragnar",19,0,0],["Atar",1,0,1],["Alvor",16,0,5],["Dorthe",16,0,4],["Sigrid",16,0,5],["Faendal",16,11,25],["Frodnar",16,0,4],["Gerdur",16,0,18],["Hod",16,0,18],["Stump",1,9,27],["Camilla Valerius",16,2,20],["Lucan Valerius",16,2,20],["Delphine",16,1,45],["Embry",16,0,18],["Orgnar",16,0,13],["Hilde",16,4,9],["Sven",16,0,18],["Ennis",20,3,15],["Halvar",20,0,22],["Reldith",20,6,15],["Erik the Slayer",20,0,28],["Mralki",20,0,13],["Britte",20,0,4],["Lemkil",20,0,15],["Sissel",20,0,4],["Jouane Manette",20,4,21],["Rorik",20,0,1],["Filnjar",21,0,5],["Grogmar gro-Burzag",21,8,0],["Odfel",21,0,0],["Sylgja",21,0,0],["Shor's Stone Guard",21,0,10],["Baldor Iron-Shaper",22,0,37],["Deor Woodcutter",22,0,37],["Yrsa",1,0,37],["Edla",22,0,37],["Nikulas",22,0,37],["Fanari Strong-Voice",22,0,37],["Tharstan",22,4,37],["Morwen",22,0,37],["Aeta",22,0,37],["Finna",22,0,37],["Oslaf",23,0,37],["Frea",22,0,46],["Storn Crag-Strider",22,4,47],["Wulf Wild-Blood",22,0,1],["Chief Burguk",24,8,1],["Arob",24,8,23],["Gharol",24,8,5],["Ghorbash the Iron Hand",24,8,8],["Murbul",24,8,6],["Nagrub",24,8,8],["Shel",24,8,23],["Dulug",24,8,23],["Ghak",24,8,23],["Mahk",24,8,23],["Oglub",24,8,23],["Umurn",24,8,23],["Chief Yamarz",25,8,23],["Atub",25,8,35],["Garakh",25,8,5],["Gularzob",25,8,23],["Lob",25,8,8],["Ogol",25,8,23],["Ugor",25,8,8],["Chief Larak",26,8,1],["Bagrak",26,8,23],["Borgakh the Steel Heart",26,8,23],["Sharamph",26,8,6],["Shuftharz",26,8,5],["Ghamorz",26,8,0],["Gul",26,8,0],["Olur",26,8,8],["Chief Mauhulakh",27,8,23],["Bolar",27,8,6],["Dushnamub",27,8,23],["Urog",27,8,8],["Yatul",27,8,8],["Bor",27,8,0],["Gadba gro-Largash",27,8,1],["Mogdurz",27,8,0],["Mul gro-Largash",27,8,1],["Legate Constantius Tituleius",1,2,10],["Legate Fasendil",1,6,10],["Legate Hrollod",1,0,10],["Legate Sevan Telendas",1,5,10],["Arrald Frozen-Heart",1,0,10],["Gonnar Oath-Giver",1,0,10],["Istar Cairn-Breaker",1,0,10],["Kottir Red-Shoal",1,0,10],["Thorygg Sun-Killer",1,0,10],["General Falx Carius",1,2,1],["Maximian Axius",1,10,27],["Ildari Sarothril",1,5,29],["Niyya",1,3,35],["Derkeethus",28,7,8],["Hrefna",28,0,4],["Sondas Drenim",28,5,13],["Tormir",28,0,8],["Annekke Crag-Jumper",28,0,8],["Verner Rock-Chucker",28,0,1],["Stormcloak Guard",29,0,10],["Agmaer",1,0,22],["Beleval",1,11,22],["Celann",1,1,1],["Durak",1,8,8],["Florentius Baenius",1,2,11],["Gunmar",1,0,5],["Ingjard",1,0,1],["Isran",1,3,5],["Mogrul",1,8,22],["Sorine Jurard",1,1,25],["Bran",1,9,27],["Sceolang",1,9,27],["Dexion Evicus",1,2,36],["Serana",1,0,33],["Vigilant Tolan",1,0,14],["Dravynea the Stoneweaver",30,5,21],["Iddra",30,0,9],["Kjeld",30,0,9],["Kjeld the Younger",30,0,1],["Ganna Uriel",30,2,18],["Gemma Uriel",30,2,18],["Klija Wolf-Claw",30,0,10],["Roggi Knot-Beard",30,0,0],["Pactur",31,0,9],["Sirgar",31,0,9],["Sorli the Builder",31,0,9],["Gestur Rockbreaker",31,0,0],["Hjaalmarch Guard",31,0,10],["Jesper",31,0,0],["Swanhvir",31,0,0],["Teeba-Ei",31,7,32],["Bujold the Unworthy",1,0,37],["Elmus",1,0,37],["Halbarn Iron-Fur",1,0,37],["Herkja",1,0,37],["Hilund",1,0,37],["Kuvar",1,0,5],["Sirkjorg",1,0,37],["Feran Sadri",1,5,48],["Fura Bloodmouth",1,0,1],["Garan Marethi",1,5,6],["Hestla",1,0,33],["Lord Harkon",1,0,33],["Modhna",1,1,1],["Namasur",1,3,6],["Orthjolf",1,0,17],["Rargal Thrallmaster",1,0,33],["Ronthil",1,11,12],["Salonia Caelia",1,2,33],["Stalf",1,0,48],["Vingalmo",1,6,48],["CuSith",1,9,27],["Garmr",1,9,27],["Watchman",1,4,15],["Vampire Cattle",1,0,37],["Aeri",1,0,18],["Ennodius Papius",1,2,18],["Kodrir",1,0,18],["Leifur",1,0,18],["Froki Whetted-Blade",1,4,8],["Hern",1,0,18],["Hert",1,0,18],["Keeper Carcette",1,1,14],["Gralnach",1,0,18],["Grosta",1,0,18],["Rift Guard",1,0,10],["Markus",1,0,1],["Oriella",1,0,12],["Arngeir",1,4,11],["Borri",1,4,11],["Einarth",1,4,11],["Wulfgar",1,4,11],["Gunjar",1,0,1],["Llewellyn the Nightingale",1,0,12],["Curwe",1,6,15],["Vantus Loreius",1,2,9],["Gilfre",1,2,18],["Balagog gro-Nolob",1,8,7],["Fultheim",1,0,1],["Hadring",1,0,1],["Eydis",1,0,13],["Ghost of Old Hroldan",1,0,1],["Leontius Salvius",1,2,13],["Skuli",1,0,4],["Aduri Sarethi",1,5,15],["Avrusa Sarethi",1,5,3],["Imperial Soldier",1,0,1],["Perth",1,1,0],["Tuthul",1,1,0],["Gissur",1,0,31],["Razelan",1,3,9],["Rulindil",1,6,35],["Tsavani",1,12,9],["Angvid",1,0,1],["Badnir",1,0,1],["Gunding",1,0,1],["Thorgar",1,0,1],["Engar",1,0,1],["Sonir",1,0,12],["Adventurer",1,13,49],["Garuk Windrime",1,0,17],["Haknir Death-Brand (ghost)",1,0,50],["Thalin Ebonhand",1,0,48],["Bradyn",1,5,22],["Kolbjorn Guard",1,0,22],["Miner",1,5,22],["Mireli",1,5,22],["Ralis Sedarys",1,5,51],["Merilar Rendas",1,5,35],["Servos Rendas",1,5,48],["Benkum",1,0,37],["Hjalfar",1,0,37],["Liesl",1,0,37],["Palevius Lex",1,4,37],["Sacrifice",1,1,9],["Hermaeus Mora",1,8,37],["Miraak",1,0,52],["Ahjisi",1,12,22],["Batum gra-Bar",1,8,22],["Eriana",1,3,22],["Heratar",1,0,22],["Hoddreid",1,0,48],["J'Kier",1,12,1],["Ma'tasarr",1,12,9],["Ra'kheran",1,12,22],["Rissing",1,0,22],["Torkild the Fearsome",1,0,22],["Tsrasuna",1,12,22],["Yar gro-Gatuk",1,8,22],["Esmond Tyne",1,1,22],["Alvide",1,0,37],["Barknar",1,0,37],["Jayri",1,3,37],["Ollrod",1,0,22],["Sern",1,4,37],["Tilde",1,0,22],["Vori",1,0,22],["Eydis",1,0,22],["Ulyn",1,5,48],["Arch-Curate Vyrthur",1,15,53],["Prelate Athring",1,15,37],["Prelate Celegriath",1,15,37],["Prelate Edhelbor",1,15,37],["Prelate Nirilor",1,15,37],["Prelate Sidanyis",1,15,37],["Akar",1,0,54],["Hjordis",1,0,54],["Majni",1,0,54],["Rakel",1,0,54],["Saden",1,5,48],["Bjornolfr",1,0,15],["Raleth Eldri",1,5,29],["Captain Avidius",1,3,16],["Emperor Titus Mede II",1,2,2],["Lieutenant Salvarus",1,2,16],["Sailor",1,0,9],["Ancarion",1,6,55],["Thalmor",1,6,30],["Falas Selvayn",1,5,37],["Erlendr",1,0,1],["Felldir the Old",1,0,1],["Gormlaith Golden-Hilt",1,0,1],["Hakon One-Eye",1,0,1],["Hunroor",1,0,1],["Jurgen Windcaller",1,0,1],["Nikulas",1,0,1],["Olaf One-Eye",1,0,1],["Ulfgar the Unending",1,0,1],["Ysgramor",1,0,9],["High King Torygg",1,0,9],["Stormcloak Soldier",1,0,32],["Svaknir",1,0,1],["Tsun",1,0,56],["Ri'saad",1,12,20],["Khayla",1,12,1],["Atahbah",1,12,20],["Ma'randru-jo",1,12,21],["Ahkari",1,12,20],["Dro'marash",1,12,1],["Kharjo",1,12,1],["Zaynabi",1,12,32],["Ma'dran",32,12,20],["Ma'jhad",1,12,1],["Ra'zhinda",1,12,1],["Agent Lorcalin",1,6,55],["Agrane Peryval",1,1,1],["Alain Dufont",1,1,40],["Alea Quintus",1,0,1],["Amaund Motierre",1,1,12],["Angi",1,0,8],["Anise",1,4,29],["Anska",1,0,48],["Aranea Ienith",13,5,21],["Aringoth",1,6,8],["Arondil",1,6,29],["Arvel the Swift",1,5,25],["Asta",1,0,22],["Bashnag",1,8,29],["Beem-Ja",1,7,35],["Brandish",1,1,48],["The Caller",1,6,21],["Captain Hargar",1,0,22],["Captain Valmir (Imperial)",1,6,57],["Champion of Boethiah",1,5,58],["Christer",1,0,13],["Deekus",1,7,2],["Drelas",1,5,21],["Ebony Warrior",1,3,59],["Eisa Blackthorn",1,0,22],["Estormo",1,6,21],["Fjola",1,0,1],["Fultheim the Fearless",1,0,1],["Gallus",1,2,25],["Gavros Plinius",1,2,35],["Geirlund",1,0,1],["Ghunzul",1,8,22],["Golldir",1,0,1],["Hajvarr Iron-Hand",1,0,22],["Haldyn",1,3,21],["Hrodulf",1,0,15],["Hunter",1,13,22],["Illia",1,2,21],["J'darr",1,12,22],["Jiub",1,5,32],["Karita",1,0,1],["Katria",1,0,60],["Kesh the Clean",1,12,36],["Knight-Paladin Gelebor",1,15,37],["Kornalus",1,6,21],["Krev the Skinner",1,13,22],["Kyr",1,0,22],["Larina",1,2,9],["Logrolf the Willful",1,4,11],["Lokil",1,0,33],["Lu'ah Al-Skaven",1,3,29],["Ma'zaka",1,12,9],["Madman",1,0,22],["Malkoran",1,1,29],["Malkus",1,8,48],["Maluril",1,5,9],["Malyn Varen",1,5,35],["Medresi Dran",1,5,9],["Minorne",1,6,29],["Moric Sidrey",1,1,58],["Morven Stroud",1,1,1],["Movarth Piquine",1,13,33],["Naris the Wicked",1,6,21],["Nerien",1,6,35],["Nimphaneth",1,11,29],["Orchendor",1,11,36],["Orthorn",1,6,21],["Paratus Decimius",1,2,29],["Ra'jirr",1,12,22],["Revus Sarvani",1,5,22],["Rexus",1,2,1],["Rigel Strong-Arm",1,0,22],["Rhorlak",1,0,22],["Salma",1,3,22],["Sanyon",1,6,29],["Selveni Nethri",1,5,29],["Septimus Signus",1,4,1],["Sild the Warlock",1,0,21],["Silvia",1,4,49],["Sond",1,0,22],["Stalleo",1,0,48],["Sulla Trebatius",1,2,36],["Telrav",1,2,17],["Thorald Gray-Mane",1,0,5],["Thorek",1,0,21],["Torkild",1,0,54],["Ulfr the Blind",1,0,22],["Umana",1,3,1],["Usha",1,7,9],["Valerica",1,0,33],["Vanik",1,0,5],["Vasha",1,12,1],["Venarus Vulpin",1,2,33],["Veren Duleri",1,5,21],["Vidrald",1,0,1],["Vighar",1,4,33],["Vigilant Adalvald",1,0,14],["Volk",1,0,14],["Wizard",1,11,48],["Wyndelius Gatharian",1,5,48]]}</script>
-<script>
-// A line-for-line JavaScript port of the simulation engine in FINALCOMPARATIVECAMPAIGN.R
-// (structured model, use_zealots = TRUE) and null_baseline_comparison.R (energy-matched null).
-// Indices are 0-based where the R code is 1-based; time steps keep R's 1..150 numbering.
-(function (root) {
-  const CONFIG = {
-    TOTAL_TIME_STEPS: 150,
-    EPSILON: 0.35, MU: 0.40,
-    REPULSION_THRESHOLD: 0.70, REPULSION_RATE_BASE: 0.15,
-    K_INTERACTIONS: 5, HOMOPHILY_RACE: 0.50, HOMOPHILY_FACTION: 0.70,
-    SHOCK_MEAN: 0.15, SHOCK_SD: 0.05, MAX_SHOCK: 0.30,
-    ALPHA_SUSC: 2.0, BETA_SUSC: 3.0,
-  };
-
-  const KEY_NPCS = [
-    'Ulfric Stormcloak', 'General Tullius', 'Galmar Stone-Fist', 'Legate Rikke',
-    'Balgruuf the Greater', 'Vignar Gray-Mane', 'Elisif the Fair',
-    'Fralia Gray-Mane', 'Idolaf Battle-Born',
-    'Maven Black-Briar', 'Brunwulf Free-Winter', 'Brina Merilis',
-    'Dengeir of Stuhn', 'Thongvor Silver-Blood',
-    'Elenwen', 'Ancano', 'Ondolemar', 'The Dragonborn',
-  ];
-  const THALMOR_AGENTS = ['Elenwen', 'Ancano', 'Ondolemar'];
-  const ZEALOT_NAMES = ['Ulfric Stormcloak', 'Galmar Stone-Fist', 'General Tullius', 'Legate Rikke', 'Elenwen', 'Ancano', 'Ondolemar'];
-
-  const LOCATION_TO_HOLD = {
-    'Solitude': 'Solitude', 'Dragon Bridge': 'Solitude', 'Markarth': 'Markarth', 'Karthwasten': 'Markarth',
-    'Falkreath': 'Falkreath', 'Helgen': 'Falkreath', 'Riverwood': 'Falkreath', 'Morthal': 'Morthal',
-    'Windhelm': 'Windhelm', 'Kynesgrove': 'Windhelm', 'Dawnstar': 'Dawnstar', 'Riften': 'Riften',
-    "Shor's Stone": 'Riften', 'Winterhold': 'Winterhold', 'College of Winterhold': 'Winterhold',
-    'Whiterun': 'Whiterun', 'Rorikstead': 'Whiterun',
-  };
-  const HOLD_ALLEGIANCE = {
-    'Solitude': 'Imperial', 'Markarth': 'Imperial', 'Falkreath': 'Imperial', 'Morthal': 'Imperial',
-    'Windhelm': 'Stormcloak', 'Dawnstar': 'Stormcloak', 'Riften': 'Stormcloak', 'Winterhold': 'Stormcloak',
-    'Whiterun': 'Neutral', 'Transient_Wilderness': 'Neutral',
-  };
-  const CLASS_INFLUENCE = {
-    'Jarl': 10, 'Legate': 9, 'Court Wizard': 8, 'Housecarl': 7, 'Thalmor': 9,
-    'Warrior': 5, 'Mage': 5, 'Blacksmith': 4, 'Merchant': 3, 'Citizen': 2, 'Beggar': 1,
-  };
-
-  const SCENARIOS = {
-    Imperial: [
-      { t: 26, name: 'Battle of Whiterun', hold: 'Whiterun', dir: -1 },
-      { t: 51, name: 'Battle for Dawnstar', hold: 'Dawnstar', dir: -1 },
-      { t: 76, name: 'Battle for Riften', hold: 'Riften', dir: -1 },
-      { t: 101, name: 'Battle of Windhelm', hold: 'Windhelm', dir: -1 },
-    ],
-    Stormcloak: [
-      { t: 26, name: 'Battle of Whiterun', hold: 'Whiterun', dir: 1 },
-      { t: 51, name: 'Battle for Falkreath', hold: 'Falkreath', dir: 1 },
-      { t: 76, name: 'Battle for The Reach', hold: 'Markarth', dir: 1 },
-      { t: 101, name: 'Battle for Solitude', hold: 'Solitude', dir: 1 },
-    ],
-  };
-
-  // ---------- random numbers (R's rbeta / rnorm / rbinom / sample, by distribution) ----------
-  function makeRng(seed) {
-    let s = (seed >>> 0) || 1;
-    const unif = () => { // mulberry32
-      s = (s + 0x6D2B79F5) >>> 0;
-      let t = s;
-      t = Math.imul(t ^ (t >>> 15), t | 1);
-      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-    let spare = null;
-    const norm = () => {
-      if (spare !== null) { const v = spare; spare = null; return v; }
-      let u, v, r;
-      do { u = unif() * 2 - 1; v = unif() * 2 - 1; r = u * u + v * v; } while (r >= 1 || r === 0);
-      const m = Math.sqrt(-2 * Math.log(r) / r);
-      spare = v * m; return u * m;
-    };
-    const gamma = a => { // Marsaglia and Tsang
-      if (a < 1) return gamma(a + 1) * Math.pow(unif(), 1 / a);
-      const d = a - 1 / 3, c = 1 / Math.sqrt(9 * d);
-      for (;;) {
-        let x, v;
-        do { x = norm(); v = 1 + c * x; } while (v <= 0);
-        v = v * v * v;
-        const u = unif();
-        if (u < 1 - 0.0331 * x * x * x * x) return d * v;
-        if (Math.log(u) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v;
-      }
-    };
-    const beta = (a, b) => { const x = gamma(a); return x / (x + gamma(b)); };
-    const int = n => Math.floor(unif() * n);
-    const binom = (n, p) => { let k = 0; for (let i = 0; i < n; i++) if (unif() < p) k++; return k; };
-    return { unif, norm, beta, int, binom };
-  }
-
-  const clamp = x => (x < 0.01 ? 0.01 : x > 0.99 ? 0.99 : x);
-
-  // ---------- load_and_prepare_data + append_dragonborn + build_agent_arrays ----------
-  function buildAgents(roster, scenario) {
-    const base = roster.agents.map(([name, h, r, c]) => {
-      const rawHome = roster.home[h];
-      const home = LOCATION_TO_HOLD[rawHome === '' ? 'Unknown' : rawHome] || 'Transient_Wilderness';
-      return { name, home, race: roster.race[r], cls: roster.cls[c] };
-    });
-    const infl = base.map(a => CLASS_INFLUENCE[a.cls] ?? 2);
-    const lo = Math.min(...infl), hi = Math.max(...infl);
-    base.forEach((a, i) => {
-      a.hold = HOLD_ALLEGIANCE[a.home] || 'Neutral';
-      a.isKey = KEY_NPCS.includes(a.name);
-      a.influence = hi === lo ? 0.5 : (infl[i] - lo) / (hi - lo);
-      a.prior = priorOf(a);
-      a.kappa = kappaOf(a);
-      a.talos = talosOf(a);
-    });
-    if (scenario === 'Imperial') {
-      base.push({ name: 'The Dragonborn', race: 'Imperial', home: 'Solitude', hold: 'Imperial', cls: 'Warrior',
-        prior: 0.02, kappa: 90, influence: 1.0, talos: 0.30, isKey: true });
-    } else {
-      base.push({ name: 'The Dragonborn', race: 'Nord', home: 'Whiterun', hold: 'Neutral', cls: 'Warrior',
-        prior: 0.98, kappa: 90, influence: 1.0, talos: 0.80, isKey: true });
-    }
-    const races = [...new Set(base.map(a => a.race))];
-    base.forEach(a => {
-      a.isThalmor = THALMOR_AGENTS.includes(a.name);
-      a.isZealot = ZEALOT_NAMES.includes(a.name) ||
-        (Math.abs(a.prior - 0.5) > 0.4 && Math.abs(a.talos) > 0.7 && a.influence > 0.4);
-      a.raceInt = races.indexOf(a.race);
-    });
-    return base;
-  }
-
-  function priorOf(a) {
-    const n = a.name, r = a.race, h = a.home;
-    if (n === 'Ulfric Stormcloak') return 0.98;
-    if (n === 'General Tullius') return 0.02;
-    if (n === 'Galmar Stone-Fist') return 0.97;
-    if (n === 'Legate Rikke') return 0.05;
-    if (/Gray.Mane/.test(n)) return 0.90;
-    if (/Battle.Born/.test(n)) return 0.10;
-    if (THALMOR_AGENTS.includes(n)) return 0.50;
-    if (r === 'High Elf') return 0.20;
-    if (r === 'Nord' && h === 'Windhelm') return 0.85;
-    if (r === 'Nord' && h === 'Dawnstar') return 0.80;
-    if (r === 'Imperial') return 0.15;
-    if (r === 'Nord' && h === 'Solitude') return 0.25;
-    if (r === 'Nord' && h === 'Whiterun') return 0.50;
-    return 0.50;
-  }
-  function kappaOf(a) {
-    if (['Ulfric Stormcloak', 'General Tullius'].includes(a.name)) return 80;
-    if (['Galmar Stone-Fist', 'Legate Rikke'].includes(a.name)) return 60;
-    if (THALMOR_AGENTS.includes(a.name)) return 75;
-    if (a.isKey) return 20;
-    return 8;
-  }
-  function talosOf(a) {
-    if (a.race === 'High Elf') return -1.0;
-    if (a.name === 'Heimskr') return 1.0;
-    if (a.race === 'Nord' && a.hold === 'Stormcloak') return 0.9;
-    if (a.race === 'Nord') return 0.6;
-    if (a.race === 'Imperial') return 0.4;
-    return 0.1;
-  }
-
-  // ---------- one run: run_mc_simulation_vec (structured) or run_mc_null_vec (null) ----------
-  function createRun(agents, scenario, { model = 'structured', driftSd = 0, seed = 1, onDelta = null, fixInHold = false } = {}) {
-    const rng = makeRng(seed);
-    const n = agents.length, K = CONFIG.K_INTERACTIONS;
-    const schedule = SCENARIOS[scenario];
-    const structured = model === 'structured';
-
-    const opinions = new Float64Array(n);
-    for (let i = 0; i < n; i++) opinions[i] = clamp(rng.beta(agents[i].prior * agents[i].kappa, (1 - agents[i].prior) * agents[i].kappa));
-    const suscept = new Float64Array(n);
-    for (let i = 0; i < n; i++) suscept[i] = rng.beta(CONFIG.ALPHA_SUSC, CONFIG.BETA_SUSC);
-    // hold_cur starts from Hold_Allegiance, exactly as in the R code
-    const holdCur = agents.map(a => a.hold);
-    const fac = new Int8Array(n);
-    const setFac = () => { for (let i = 0; i < n; i++) fac[i] = (opinions[i] > 0.6) - (opinions[i] < 0.4); };
-    setFac();
-
-    // personal network: 20 contacts, ~80% from the agent's own hold, sampled with replacement
-    const pools = {};
-    agents.forEach((a, i) => (pools[a.home] ||= []).push(i));
-    const net = new Int32Array(n * 20);
-    for (let i = 0; i < n; i++) {
-      let pool = pools[agents[i].home];
-      if (!pool || pool.length < 2) pool = null;
-      const nLoc = rng.binom(20, 0.8);
-      const picks = [];
-      for (let k = 0; k < nLoc; k++) picks.push(pool ? pool[rng.int(pool.length)] : rng.int(n));
-      for (let k = nLoc; k < 20; k++) picks.push(rng.int(n));
-      for (let k = picks.length - 1; k > 0; k--) { const j = rng.int(k + 1); [picks[k], picks[j]] = [picks[j], picks[k]]; }
-      for (let k = 0; k < 20; k++) net[i * 20 + k] = picks[k];
-    }
-
-    const partners = new Int32Array(n * K);
-    const delta = new Float64Array(n);
-    let t = 0;
-    let lastEvent = null;
-
-    function step() {
-      if (t >= CONFIG.TOTAL_TIME_STEPS) return false;
-      t++;
-      for (let i = 0; i < n; i++) for (let k = 0; k < K; k++) {
-        let p = net[i * 20 + rng.int(20)];
-        if (p === i) p = (i + 1) % n; // (p %% n) + 1 in 1-based R
-        partners[i * K + k] = p;
-      }
-
-      if (structured) {
-        for (let i = 0; i < n; i++) {
-          const oi = opinions[i], fi = fac[i], ri = agents[i].raceInt;
-          let d = 0, rep = 0;
-          for (let k = 0; k < K; k++) {
-            const p = partners[i * K + k];
-            const diff = opinions[p] - oi, ad = Math.abs(diff);
-            const pInf = agents[p].influence;
-            if (ad < CONFIG.EPSILON) {
-              const w = 1 + CONFIG.HOMOPHILY_RACE * (agents[p].raceInt === ri) + CONFIG.HOMOPHILY_FACTION * (fac[p] === fi);
-              d += CONFIG.MU * pInf * w * diff;
-            }
-            if (ad > CONFIG.REPULSION_THRESHOLD) {
-              const opp = fac[p] * fi === -1;
-              const mult = 1 + 1.0 * (opp && agents[p].raceInt !== ri);
-              rep += CONFIG.REPULSION_RATE_BASE * mult * pInf * diff * -1;
-            }
-          }
-          let di = d / K + rep / K;
-          if (agents[i].isThalmor) di = 0.10 * di + 0.05 * (0.5 - oi);
-          if (agents[i].isZealot) di = 0;
-          delta[i] = di;
-        }
-        if (onDelta) onDelta(delta);
-        for (let i = 0; i < n; i++) opinions[i] = clamp(opinions[i] + delta[i]);
-        for (let i = 0; i < n; i++) opinions[i] = clamp(opinions[i] + (agents[i].isZealot ? 0 : rng.norm() * 0.01));
-      } else {
-        for (let i = 0; i < n; i++) opinions[i] = clamp(opinions[i] + rng.norm() * driftSd);
-        for (let i = 0; i < n; i++) opinions[i] = clamp(opinions[i] + rng.norm() * 0.01);
-      }
-
-      lastEvent = null;
-      const ev = schedule.find(e => e.t === t);
-      if (ev) {
-        lastEvent = ev;
-        for (let i = 0; i < n; i++) {
-          // the R code compares allegiance to a hold name, so this is never true; fixInHold compares the home hold
-          const inHold = fixInHold ? agents[i].home === ev.hold : holdCur[i] === ev.hold;
-          const base = Math.max(0, Math.min(CONFIG.MAX_SHOCK, Math.abs(CONFIG.SHOCK_MEAN + rng.norm() * CONFIG.SHOCK_SD)));
-          const talosMod = 1 + 0.3 * agents[i].talos * ev.dir;
-          let tilt = 0;
-          for (let k = 0; k < K; k++) tilt += fac[partners[i * K + k]];
-          const contagion = 1 + 0.1 * (tilt * ev.dir);
-          const prox = (inHold ? 2.0 : 0.6) * Math.max(0.1, contagion);
-          const dir = agents[i].isThalmor ? -Math.sign(opinions[i] - 0.5) : ev.dir;
-          let shock = dir * base * suscept[i] * talosMod * prox;
-          if (structured && agents[i].isZealot) shock *= 0.05;
-          opinions[i] = clamp(opinions[i] + shock);
-        }
-        const flip = ev.dir === 1 ? 'Stormcloak' : 'Imperial';
-        for (let i = 0; i < n; i++) if (holdCur[i] === ev.hold) holdCur[i] = flip;
-      }
-      setFac();
-      return true;
-    }
-
-    return { opinions, step, get t() { return t; }, get lastEvent() { return lastEvent; }, schedule };
-  }
-
-  // calibrate_drift_sd: mean per-step SD (n - 1 denominator, as R's sd) of the structured social delta
-  function calibrateDriftSd(roster, nCal = 5, seed = 42, fixInHold = false) {
-    const agents = buildAgents(roster, 'Imperial');
-    const sds = [];
-    for (let r = 1; r <= nCal; r++) {
-      const run = createRun(agents, 'Imperial', {
-        seed: seed + r,
-        fixInHold,
-        onDelta: d => {
-          let m = 0; for (const v of d) m += v; m /= d.length;
-          let s = 0; for (const v of d) s += (v - m) ** 2;
-          sds.push(Math.sqrt(s / (d.length - 1)));
-        },
-      });
-      while (run.step());
-    }
-    return sds.reduce((a, b) => a + b, 0) / sds.length;
-  }
-
-  const api = { CONFIG, SCENARIOS, buildAgents, createRun, calibrateDriftSd };
-  if (typeof module !== 'undefined' && module.exports) module.exports = api;
-  else root.SkyrimABM = api;
-})(typeof window !== 'undefined' ? window : globalThis);
-</script>
-<script>
-/* Civil War demo: drives SkyrimABM (a port of the paper's R engine) and draws it */
-(() => {
-  const abm = window.SkyrimABM;
-  const roster = JSON.parse(document.getElementById('abm-roster').textContent);
-  const map = document.getElementById('war-map'), hist = document.getElementById('war-hist');
-  const mc = map.getContext('2d'), hc = hist.getContext('2d');
-  const $ = id => document.getElementById(id);
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const css = getComputedStyle(document.documentElement);
-  const tok = n => css.getPropertyValue(n).trim();
-  const IMP = [125, 12, 20], MID = [168, 160, 160], STO = [38, 70, 120];
-  const mix = (a, b, f) => a.map((v, i) => Math.round(v + (b[i] - v) * f));
-  const colour = p => { const c = p < 0.5 ? mix(IMP, MID, p / 0.5) : mix(MID, STO, (p - 0.5) / 0.5); return `rgb(${c[0]},${c[1]},${c[2]})`; };
-
-  // rough geography of the nine holds, plus everyone the R code files under Transient_Wilderness
-  const PLACES = {
-    Solitude: [0.27, 0.15], Morthal: [0.40, 0.30], Dawnstar: [0.55, 0.13], Winterhold: [0.80, 0.13],
-    Markarth: [0.09, 0.42], Whiterun: [0.50, 0.53], Windhelm: [0.83, 0.42], Falkreath: [0.33, 0.83],
-    Riften: [0.85, 0.80], Transient_Wilderness: [0.61, 0.79],
-  };
-  const LABEL = { Transient_Wilderness: 'Elsewhere' };
-  const W = map.width, H = map.height, SP = 10;
-
-  let scenario = 'Imperial', model = 'structured', driftSd = null;
-  let agents, run, pos, timer = null, hold = 0;
-
-  function layout() {
-    pos = new Array(agents.length);
-    const byHome = {};
-    agents.forEach((a, i) => (byHome[a.home] ||= []).push(i));
-    for (const [home, ids] of Object.entries(byHome)) {
-      const [cx, cy] = PLACES[home];
-      ids.forEach((id, k) => { // sunflower packing, one dot per NPC
-        const r = SP * 0.55 * Math.sqrt(k + 0.5), th = k * 2.39996;
-        pos[id] = [cx * W + r * Math.cos(th), cy * H + r * Math.sin(th)];
-      });
-    }
-  }
-
-  function drawMap() {
-    mc.fillStyle = tok('--bg'); mc.fillRect(0, 0, W, H);
-    mc.font = `600 17px ${tok('--text')}`; mc.textAlign = 'center'; mc.fillStyle = tok('--ink');
-    const ops = run.opinions;
-    for (let i = 0; i < agents.length; i++) {
-      mc.fillStyle = colour(ops[i]);
-      mc.beginPath(); mc.arc(pos[i][0], pos[i][1], 4, 0, 6.2832); mc.fill();
-    }
-    mc.fillStyle = tok('--ink');
-    for (const [home, [cx, cy]] of Object.entries(PLACES)) {
-      const n = agents.filter(a => a.home === home).length;
-      const r = SP * 0.55 * Math.sqrt(n) + 20;
-      mc.fillText(LABEL[home] || home, cx * W, Math.max(18, cy * H - r));
-    }
-  }
-
-  function drawHist() {
-    const B = 25, bins = new Array(B).fill(0), ops = run.opinions;
-    for (const v of ops) bins[Math.min(B - 1, Math.floor(v * B))]++;
-    const w = hist.width, h = hist.height, max = ops.length * 0.4;
-    hc.fillStyle = tok('--bg'); hc.fillRect(0, 0, w, h);
-    hc.fillStyle = tok('--surface'); hc.fillRect(w * 0.4, 0, w * 0.2, h);
-    const bw = w / B;
-    bins.forEach((c, b) => {
-      const bh = Math.min(h - 6, (c / max) * (h - 6));
-      hc.fillStyle = colour((b + 0.5) / B);
-      hc.fillRect(b * bw + 2, h - bh, bw - 4, bh);
-    });
-  }
-
-  function stats() {
-    const ops = run.opinions; let m = 0, neu = 0;
-    for (const v of ops) { m += v; if (v >= 0.4 && v <= 0.6) neu++; }
-    $('war-t').textContent = `${run.t} of 150`;
-    $('war-mean').textContent = (m / ops.length).toFixed(2);
-    $('war-neu').textContent = `${Math.round((neu / ops.length) * 100)}%`;
-  }
-
-  const render = () => { drawMap(); drawHist(); stats(); };
-
-  function reset() {
-    stop();
-    if (model === 'null' && driftSd === null) driftSd = abm.calibrateDriftSd(roster);
-    agents = abm.buildAgents(roster, scenario);
-    layout();
-    run = abm.createRun(agents, scenario, { model, driftSd: driftSd || 0, seed: (Math.random() * 2 ** 31) >>> 0 });
-    $('war-event').textContent = 'Before the first battle';
-    $('war-run').textContent = 'Run the war';
-    render();
-  }
-
-  function tick() {
-    if (hold > 0) { hold--; return; }
-    if (!run.step()) { stop(); $('war-run').textContent = 'Run again'; $('war-event').textContent = 'The war is over'; return; }
-    const ev = run.lastEvent;
-    if (ev) { $('war-event').textContent = `Step ${ev.t}: ${ev.name}`; hold = reduce ? 0 : 8; }
-    render();
-  }
-  function stop() { clearInterval(timer); timer = null; }
-  function start() {
-    if (run.t >= 150) reset();
-    if (timer) { stop(); $('war-run').textContent = 'Resume'; return; }
-    $('war-run').textContent = 'Pause';
-    timer = setInterval(tick, 60);
-  }
-
-  $('war-run').addEventListener('click', start);
-  $('war-reset').addEventListener('click', reset);
-  document.querySelectorAll('#civil-war input[name="sc"]').forEach(r => r.addEventListener('change', e => { scenario = e.target.value; reset(); }));
-  document.querySelectorAll('#civil-war input[name="model"]').forEach(r => r.addEventListener('change', e => { model = e.target.value; reset(); }));
-
-  function who(e) {
-    const r = map.getBoundingClientRect();
-    const x = (e.clientX - r.left) * W / r.width, y = (e.clientY - r.top) * H / r.height;
-    let best = -1, bd = 400;
-    pos.forEach(([px, py], i) => { const d = (px - x) ** 2 + (py - y) ** 2; if (d < bd) { bd = d; best = i; } });
-    if (best < 0) return;
-    const a = agents[best], p = run.opinions[best];
-    const side = p < 0.4 ? 'leans Imperial' : p > 0.6 ? 'leans Stormcloak' : 'undecided';
-    $('war-who').textContent = `${a.name}, ${LABEL[a.home] || a.home}: ${p.toFixed(2)}, ${side}`;
-  }
-  map.addEventListener('pointermove', who);
-  map.addEventListener('pointerdown', who);
-
-  reset();
-})();
-</script>
 <script>
 /* The page's motion layer: the name forms from dots, figures count up,
    and red panels fold open from the axis.
@@ -1173,7 +734,7 @@ h2 + h3.group { margin-top: 36px; }
   onView([...document.querySelectorAll('.intro .facts b, .entry .side .fig, .figure .big')], countUp);
 
   /* ---------- red panels fold open from the axis ---------- */
-  const panels = [...document.querySelectorAll('#civil-war, footer')];
+  const panels = [...document.querySelectorAll('#grant-central, footer')];
   if (!reduce) {
     panels.forEach(p => p.classList.add('fold'));
     onView(panels, p => p.classList.add('open'), '0px 0px -12% 0px');
