@@ -310,7 +310,8 @@ h2 + h3.group { margin-top: 36px; }
   .topbar .right { display: contents; }
   .topbar .btn { justify-self: end; }
   .mosaic { grid-template-columns: 1.2fr 0.7fr 1fr 1fr; }
-  .mosaic > :nth-child(n+5) { display: none; }
+  .mosaic > :nth-child(4) { display: none; } /* phones: BIDMC in place of The Chess Players */
+  .mosaic > :nth-child(5) img { object-position: 0% 60% !important; }
   .affil .dot { display: none; }
   .affil .i { display: block; }
   .title { padding-block: 32px 40px; }
