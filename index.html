@@ -100,6 +100,10 @@ p { margin: 0; }
 .mosaic { display: grid; grid-template-columns: 1.3fr 0.75fr 1.05fr 1.2fr 1.1fr; overflow: hidden; }
 .mosaic .ph.lift { filter: contrast(1.08); }
 .mosaic > * { min-width: 0; overflow: hidden; }
+.affil { padding-top: 14px; }
+.affil p { grid-column: 1 / -1; font-size: var(--step-small); font-weight: 600; letter-spacing: 0.02em; }
+.affil .i { white-space: nowrap; }
+.affil .dot { margin-inline: 0.5em; font-weight: 400; }
 
 .title { align-items: end; padding-block: 40px 48px; }
 .title .side p { font-size: var(--step-body); color: var(--muted); max-width: 32ch; }
@@ -307,6 +311,8 @@ h2 + h3.group { margin-top: 36px; }
   .topbar .btn { justify-self: end; }
   .mosaic { grid-template-columns: 1.2fr 0.7fr 1fr 1fr; }
   .mosaic > :nth-child(n+5) { display: none; }
+  .affil .dot { display: none; }
+  .affil .i { display: block; }
   .title { padding-block: 32px 40px; }
   .title .side { order: 2; margin-top: 20px; }
   .title h1 { font-size: 22vw; }
@@ -372,6 +378,7 @@ h2 + h3.group { margin-top: 36px; }
     <div><img class="ph lift" src="assets/the-chess-players-web.jpg" width="1600" height="1188" alt="The Chess Players by Thomas Eakins, 1876: two men at a chessboard while a third watches" style="object-position:40% 58%; transform: scale(1.16)"></div>
     <div><img class="ph" src="assets/psychopathic-hospital-staff-web.jpg" width="900" height="1024" alt="The doctors and nurses of the Boston Psychopathic Hospital standing on the hospital’s front steps, around 1922" style="object-position:50% 30%"></div>
   </div>
+  <div class="page affil"><p class="after"><span class="i">Research Student</span> <span class="dot" aria-hidden="true">·</span> <span class="i">Beth Israel Deaconess Medical Center</span> <span class="dot" aria-hidden="true">·</span> <span class="i">Harvard Medical School teaching hospital</span></p></div>
 
   <div class="page title">
     <div class="side"><p class="after">Open to research collaborations on cognition, decision-making and models of belief.</p>
